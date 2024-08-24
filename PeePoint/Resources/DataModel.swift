@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct PublicToilet: Codable,Hashable {
     let prefectureCode: Int?              // 都道府県コード又は市区町村コード
     let number: Int?                      // NO
@@ -40,8 +41,6 @@ struct PublicToilet: Codable,Hashable {
     let image: [String?]                  // 画像
     let imageLicense: String?             // 画像_ライセンス
     let remarks: String?                  // 備考
-}
-
 
 
 
@@ -156,8 +155,4 @@ class PublicToiletManager: ObservableObject {
         }
     }
 }
-
-
-
-
 
