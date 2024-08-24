@@ -8,18 +8,11 @@
 import CoreGraphics
 import Foundation
 
-// トイレの構造体
-struct Toilet {
-    let id: Int
-    let name: String
-    let coordinate: (latitude: Double, longitude: Double)
-}
-
 // Quadtreeのノード
 class QuadtreeNode {
     let boundary: CGRect
     let capacity: Int
-    var toilets: [Toilet]
+    var toilets: [PublicToilet]
     var divided: Bool = false
     
     var northeast: QuadtreeNode?
@@ -34,8 +27,8 @@ class QuadtreeNode {
     }
     
     // 座標を挿入する
-    func insert(toilet: Toilet) -> Bool {
-        let point = CGPoint(x: toilet.coordinate.longitude, y: toilet.coordinate.latitude)
+    func insert(toilet: PublicToilet) -> Bool {
+        let point = CGPoint(x: toilet.longitude, y: toilet.latitude)
         
         guard boundary.contains(point) else {
             return false
@@ -76,12 +69,12 @@ class QuadtreeNode {
     }
     
     // 複数の最寄りトイレを探す
-    func queryNearest(point: CGPoint, maxResults: Int) -> [Toilet] {
-        var closestToilets: [Toilet] = []
-        var distances: [(Toilet, CGFloat)] = []
+    func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
+        var closestToilets: [PublicToilet] = []
+        var distances: [(PublicToilet, CGFloat)] = []
         
         for toilet in toilets {
-            let toiletPoint = CGPoint(x: toilet.coordinate.longitude, y: toilet.coordinate.latitude)
+            let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
             let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
             distances.append((toilet, distance))
         }
@@ -92,7 +85,7 @@ class QuadtreeNode {
                 if node!.boundary.contains(point) {
                     let nearestInChild = node!.queryNearest(point: point, maxResults: maxResults)
                     for toilet in nearestInChild {
-                        let toiletPoint = CGPoint(x: toilet.coordinate.longitude, y: toilet.coordinate.latitude)
+                        let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
                         let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
                         distances.append((toilet, distance))
                     }
@@ -115,36 +108,52 @@ class QuadtreeNode {
  let boundary = CGRect(x: -180, y: -90, width: 360, height: 180) // 地球全体をカバーする長方形
  let quadtree = QuadtreeNode(boundary: boundary, capacity: 4)
  
- // いくつかのトイレを挿入
- let toilets = [
- Toilet(id: 1, name: "Toilet A", coordinate: (latitude: 35.6586, longitude: 139.7454)), // 東京タワー
- Toilet(id: 2, name: "Toilet B", coordinate: (latitude: 34.6937, longitude: 135.5023)), // 大阪
- Toilet(id: 3, name: "Toilet C", coordinate: (latitude: 35.0116, longitude: 135.7681)), // 京都
- Toilet(id: 4, name: "Toilet D", coordinate: (latitude: 43.0687, longitude: 141.3508)), // 札幌
- Toilet(id: 5, name: "Toilet E", coordinate: (latitude: 26.2124, longitude: 127.6809)), // 沖縄
- ]
+ // CSVのデータからトイレ情報を作成して挿入
+ let csvLine = "131083,1,東京都,江東区,江東区立万年橋際公衆便所,コウトウクリツマンエンバシギワコウシュウベンジョ,Public_toilet_at_Mannen-Bridge_KotoCity,江東区清澄2-14-9,,万年橋南東詰め,35.68322,139.794785,2,2,0,0,0,0,0,0,0,0,1,有,無,有,0:00,23:59,,,,"
+ let components = csvLine.components(separatedBy: ",")
  
- for toilet in toilets {
- quadtree.insert(toilet: toilet)
- }
+ let publicToilet = PublicToilet(
+ prefectureCode: Int(components[0])!,
+ number: Int(components[1])!,
+ prefectureName: components[2],
+ cityName: components[3],
+ name: components[4],
+ nameKana: components[5],
+ nameEnglish: components[6],
+ address: components[7],
+ direction: components[8],
+ installationLocation: components[9],
+ latitude: Double(components[10])!,
+ longitude: Double(components[11])!,
+ totalMaleToilets: Int(components[12])!,
+ maleUrinals: Int(components[13])!,
+ maleJapaneseStyle: Int(components[14])!,
+ maleWesternStyle: Int(components[15])!,
+ totalFemaleToilets: Int(components[16])!,
+ femaleJapaneseStyle: Int(components[17])!,
+ femaleWesternStyle: Int(components[18])!,
+ totalUnisexToilets: Int(components[19])!,
+ unisexJapaneseStyle: Int(components[20])!,
+ unisexWesternStyle: Int(components[21])!,
+ multifunctionalToilets: Int(components[22])!,
+ wheelchairAccessible: components[23],
+ infantFacilities: components[24],
+ ostomateFacilities: components[25],
+ openingTime: components[26],
+ closingTime: components[27],
+ specialUsageNotes: components[28],
+ image: components[29],
+ imageLicense: components[30],
+ remarks: components[31]
+ )
+ 
+ quadtree.insert(toilet: publicToilet)
  
  // 現在地に最も近い4つのトイレを探す
  let currentLocation = CGPoint(x: 139.6917, y: 35.6895) // 東京駅付近
  let nearestToilets = quadtree.queryNearest(point: currentLocation, maxResults: 4)
  
  for toilet in nearestToilets {
- print("Toilet: \(toilet.name) at \(toilet.coordinate)")
+ print("Toilet: \(toilet.name) at \(toilet.latitude), \(toilet.longitude)")
  }
- // テスト用のコード
- 
- 
- /*
-  
-  •    座標系の変換: coordinateは緯度・経度（latitude, longitude）で表現。これをCGPointに変換して使用。
-  •    QuadtreeNode: 地球全体をカバーするCGRectを使用し、地理座標を管理。
-  •    insert(toilet:): トイレの位置情報をQuadtreeに挿入。
-  •    queryNearest(point:): 緯度・経度に基づいて現在地に最も近いトイレを検索。
-  
-  */
- 
  */
