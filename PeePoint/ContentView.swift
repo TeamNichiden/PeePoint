@@ -11,9 +11,9 @@ import MapKit
 struct ContentView: View {
   var body: some View {
     VStack {
-      Map()
-       .ignoresSafeArea(edges: .top)
-        .frame(height: 300)
+//      Map()
+//       .ignoresSafeArea(edges: .top)
+//        .frame(height: 300)
       VStack(alignment: .leading) {
 
         
