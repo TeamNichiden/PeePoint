@@ -12,7 +12,8 @@ targets:
     type: application
     platform: iOS
     sources: [PeePoint]
-    resources: [Resources]
+    resources:
+      - path: Resources
     dependencies:
       - framework: Pods/SwiftLint
     settings:
