@@ -18,6 +18,11 @@ class ToieltSerchByNameModel : NSObject,ObservableObject,CLLocationManagerDelega
     private func requestLocation()-> CLLocationManager{
         let locationManager = CLLocationManager()
 
+        init(){
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.requestWhenInUseAuthorization()
+        }
+
         if CLLocationManager.locationServicesEnabled() {
             locationManager.requestWhenInUseAuthorization()
             locationManager.requestLocation()
