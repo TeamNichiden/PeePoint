@@ -7,6 +7,7 @@
 
 import CoreGraphics
 import Foundation
+import CoreLocation
 
 // Quadtreeのノード
 class QuadtreeNode {
@@ -19,7 +20,7 @@ class QuadtreeNode {
     private var northwest: QuadtreeNode?
     private var southeast: QuadtreeNode?
     private var southwest: QuadtreeNode?
-
+    
     
     init(boundary: CGRect, capacity: Int) {
         self.capacity = capacity
@@ -27,10 +28,10 @@ class QuadtreeNode {
     }
     
     // 座標を挿入する
-
+    
     func insert(toilet: PublicToilet) -> Bool {
         let point = CGPoint(x: toilet.longitude, y: toilet.latitude)
-
+        
         
         guard boundary.contains(point) else {
             return false
@@ -51,7 +52,7 @@ class QuadtreeNode {
     }
     
     // クワッドを分割する
-
+    
     private func subdivide() {
         let x = boundary.origin.x
         let y = boundary.origin.y
@@ -72,29 +73,28 @@ class QuadtreeNode {
     }
     
     // 複数の最寄りトイレを探す
-
-    func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
+    func queryNearest(point: CLLocation, maxResults: Int) -> [PublicToilet] {
         var closestToilets: [PublicToilet] = []
         var distances: [(PublicToilet, CGFloat)] = []
         
         for toilet in toilets {
             let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
-
-          
-            let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
+            
+            // CLLocationから緯度と経度を取得
+            let distance = hypot(toiletPoint.x - CGFloat(point.coordinate.longitude), toiletPoint.y - CGFloat(point.coordinate.latitude))
             distances.append((toilet, distance))
         }
         
         if divided {
             let nodes = [northeast, northwest, southeast, southwest]
             for node in nodes {
-                if node!.boundary.contains(point) {
+                if node!.boundary.contains(CGPoint(x: point.coordinate.longitude, y: point.coordinate.latitude)) {
                     let nearestInChild = node!.queryNearest(point: point, maxResults: maxResults)
                     for toilet in nearestInChild {
-
+                        
                         let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
-
-                        let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
+                        
+                        let distance = hypot(toiletPoint.x - CGFloat(point.coordinate.longitude), toiletPoint.y - CGFloat(point.coordinate.latitude))
                         distances.append((toilet, distance))
                     }
                 }
@@ -110,7 +110,6 @@ class QuadtreeNode {
         return closestToilets
     }
 }
-
 /*
  // テスト用のコード
  let boundary = CGRect(x: -180, y: -90, width: 360, height: 180) // 地球全体をカバーする長方形

@@ -21,7 +21,7 @@ struct MainMapView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
-    let currentLocation = CGPoint(x: 139.6917, y: 35.6895) // 東京駅付近
+    let currentLocation = CLLocation(latitude: 139.6917, longitude: 35.6895) // 東京駅付近
     
     //Sample List
     let items = ["江東区","江東区","江東区"]
