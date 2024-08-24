@@ -71,7 +71,7 @@ struct MainMapView: View {
                 switch viewMNumber{
                 case 0:
                     DetailView()
-                        .presentationDetents([.medium])
+                        .presentationDetents([.fraction(0.65), .large])
                 case 1:
                     DetailView()
                         

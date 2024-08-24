@@ -1,42 +1,36 @@
 import SwiftUI
 
+class DetailViewModel: ObservableObject {
+    @Published var showFullSizeImage = false
+    @Published var selectedImageUrl: URL?
+    @Published var timeTakenToArrive = 5
+}
+
 struct DetailView: View {
-    
-    @State var index: Int = 860
-    @State var timeTakenToArrive = 5
+    @State var index = 950
+    @StateObject private var viewModel = DetailViewModel()
     @EnvironmentObject private var dataModel: PublicToiletManager
     
     var body: some View {
         NavigationStack {
-            ScrollView{
-                LazyVStack {
-                    titleAndFavButtonView
-                    imageScrollView
-                    labelSection
-                    
-                    HStack{
-                        Text("\(timeTakenToArrive) 分")
-                            .font(.system(size: 45))
-                            .padding(.horizontal)
-                        Spacer()
+            ZStack{
+                ScrollView{
+                    LazyVStack {
+                        titleAndFavButtonView
+                        imageScrollView
+                        labelSection
+                        timeAndDistanceView
                     }
-                    HStack{
-                        Text("１km")
-                            
-                        Text(getArrivalTime(timeTakenToArrive: timeTakenToArrive))
-                        Spacer()
-                        
-                    }
-                    .padding(.horizontal)
-                    .font(.headline)
-
-                   
-                    
+                    .padding(.top, 20)
                 }
-                .padding(.top, 20)
+                DirectionButtonView
+            }
+            .fullScreenCover(isPresented: $viewModel.showFullSizeImage) {
+                if let url = viewModel.selectedImageUrl {
+                    PhotoView(showFullSizeImage: $viewModel.showFullSizeImage,url: url)
+                }
             }
         }
-
     }
 }
 
@@ -79,7 +73,7 @@ extension DetailView{
         HStack {
             Text(dataModel.toilets[index].address ?? "No name")
                 .font(.title)
-
+            
             Spacer()
             //            Image(systemName: "star")
             Image(systemName: "heart")
@@ -105,21 +99,22 @@ extension DetailView{
     
     // MARK: - Image Navigation Link
     private func imageNavigationLink(for imageUrl: String?) -> some View {
-        guard let urlString = imageUrl, let url = URL(string: urlString) else {
-            return AnyView(
-                invalidImageView
-            )
+        guard
+            let urlString = imageUrl,
+            let url = URL(string: urlString)
+        else {
+            return AnyView(invalidImageView)
         }
         
         return AnyView(
-            NavigationLink {
-                fullImageView(url: url)
+            Button {
+                viewModel.selectedImageUrl = url
+                viewModel.showFullSizeImage = true
             } label: {
                 thumbnailImageView(url: url)
             }
         )
     }
-    
     // MARK: - Invalid Image View
     private var invalidImageView: some View {
         ForEach(1..<4, id: \.self) { _ in
@@ -142,19 +137,7 @@ extension DetailView{
             placeholderImageView
         }
     }
-    
-    // MARK: - Full Image View
-    private func fullImageView(url: URL) -> some View {
-        AsyncImage(url: url) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: .infinity)
-        } placeholder: {
-            placeholderImageView
-        }
-    }
-    
+        
     // MARK: - Placeholder Image View
     private var placeholderImageView: some View {
         Image("toilet-thumbnil")
@@ -177,12 +160,13 @@ extension DetailView{
         }
         .padding(.horizontal, 10)
     }
-
+    
     // MARK: - Label View
     private func labelView(label: String, value: String?) -> some View {
         HStack {
             Text(label)
-                .frame(width:140,height: 30)
+                .frame(width:130,height: 30)
+                .foregroundColor(.gray)
             if let value = value {
                 Text(value)
                 
@@ -192,7 +176,7 @@ extension DetailView{
         .foregroundColor(.black)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray, lineWidth: 3)
+                .stroke(Color.gray, lineWidth: 1)
         )
     }
     
@@ -245,11 +229,84 @@ extension DetailView{
         
         return labels
     }
-
+    
+    private var timeAndDistanceView: some View{
+        VStack{
+            HStack{
+                Text("\(viewModel.timeTakenToArrive) 分")
+                    .font(.system(size: 45))
+                    .padding(.horizontal)
+                Spacer()
+            }
+            HStack{
+                Text("１km")
+                
+                Text(getArrivalTime(timeTakenToArrive: viewModel.timeTakenToArrive))
+                Spacer()
+                
+            }
+            .padding(.horizontal)
+            .font(.headline)
+        }
         
+    }
+    private var DirectionButtonView:some View{
+        VStack{
+            Spacer()
+            Button {
+                print("案内")
+                index += 1
+            } label: {
+                Text("Direction")
+                    .foregroundColor(.white)
+                    .font(.title)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .background(.blue)
+                    .cornerRadius(10)
+                    .padding()
+                    .shadow(radius: 10)
+            }
+        }
+    }
 }
 
 
+struct PhotoView: View {
+    @Binding var showFullSizeImage:Bool
+    var url: URL
+    var body: some View {
+        VStack{
+            HStack{
+                Button {
+                    showFullSizeImage = false
+                } label: {
+                    Image(systemName: "xmark.circle")
+                        .font(.title)
+                        .foregroundColor(.black)
+                }
+                Spacer()
+
+            }
+            .padding()
+            Spacer()
+            AsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .frame(maxHeight: .infinity)
+                    .ignoresSafeArea()
+            } placeholder: {
+                Image("toilet-thumbnil")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 200)
+            }
+            Spacer()
+        }
+    }
+}
 
 
 
