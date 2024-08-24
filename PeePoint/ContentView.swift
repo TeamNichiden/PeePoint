@@ -9,12 +9,14 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
+@StateObject private var viewModel = PublicToiletManager()
   var body: some View {
     VStack {
-      Map()
-       .ignoresSafeArea(edges: .top)
-        .frame(height: 300)
+//      Map()
+//       .ignoresSafeArea(edges: .top)
+//        .frame(height: 300)
       VStack(alignment: .leading) {
+//          Text(viewModel.toilets[1].address)
 
         
          Text("Turtle Rock")
