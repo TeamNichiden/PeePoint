@@ -53,14 +53,26 @@ struct MainMapView: View {
                     RoundedRectangle(cornerRadius: 30)
                         .stroke(.gray,lineWidth:1))
                     .padding()
-                
+                //検索欄
+                if isTap {
+                    LazyVStack(alignment: .leading,spacing: 0) {
+                        ForEach(listFiltered.indices, id: \.self) { index in
+                            Text(listFiltered[index])
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(.white)
+                                .overlay(
+                                    Rectangle()
+                                        .frame(height:1)
+                                        .foregroundColor(.gray)
+                                        .padding(.top,34)
+                                        .padding(.horizontal)
+                                )
+                        }
+                    }
+                }
                 Spacer()
                 
-            }
-            
-            //検索欄
-            if isTap {
-                searchListView()
             }
         }
         .sheet(isPresented: $viewModel.showSheet) {
