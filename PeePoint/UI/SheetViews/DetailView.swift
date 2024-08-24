@@ -7,7 +7,7 @@ class DetailViewModel: ObservableObject {
 }
 
 struct DetailView: View {
-    @State var index = 950
+    @State var index = 200
     @StateObject private var viewModel = DetailViewModel()
     @EnvironmentObject private var dataModel: PublicToiletManager
     
