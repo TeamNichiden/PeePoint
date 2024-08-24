@@ -8,7 +8,7 @@ import SwiftUI
 import MapKit
 
 class MapViewModel: ObservableObject {
-    @Published var showSheet: Bool = true
+    @Published var showSheet: Bool = false
     @Published var searchText: String = ""
     @Published var viewNumber: Int = 0 {
         didSet {
@@ -63,18 +63,23 @@ struct MainMapView: View {
             Map()
                 .ignoresSafeArea()
             VStack{
-                TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
-                    isTap = item
-                })
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .frame(height:55)
-                .background(.white)
-                .cornerRadius(30)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 30)
-                        .stroke(.gray,lineWidth:1))
-                .padding()
+                Button(action: {
+                    //遷移bool
+                    isTap = true
+                }) {
+                    TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
+                        isTap = item
+                    })
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .frame(height:55)
+                    .background(.white)
+                    .cornerRadius(30)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 30)
+                            .stroke(.gray,lineWidth:1))
+                    .padding()
+                }
                 //検索欄
                 if isTap {
                     LazyVStack(alignment: .leading,spacing: 0) {
@@ -93,6 +98,7 @@ struct MainMapView: View {
                         }
                     }
                 }
+                
                 Spacer()
                 
             }
@@ -110,6 +116,9 @@ struct MainMapView: View {
                     ContentView()
                 }
                 
+            }
+            if isTap {
+                searchListView()
             }
         }.onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
