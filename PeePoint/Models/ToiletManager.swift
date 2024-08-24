@@ -13,7 +13,8 @@ class PublicToiletManager: ObservableObject {
     @Published var toilets: [PublicToilet] = []
     let filePaths = ["utf8.csv","dataSet2.csv"]
     private let favoritesKey = "favoriteToilets"
-    
+    @Published var nearestToilets: [PublicToilet] = []
+    private let quadtree = QuadtreeNode(boundary: CGRect(x: -180, y: -90, width: 360, height: 180), capacity: 4)
     @Published var favoriteToilets: [Int] = [] {
     didSet {
     saveFavorites()
@@ -54,8 +55,8 @@ class PublicToiletManager: ObservableObject {
                         address: components[7],
                         direction: components[8].isEmpty ? nil : components[8],
                         installationLocation: components[9],
-                        latitude: Double(components[10]),
-                        longitude: Double(components[11]),
+                        latitude: Double(components[10]) ?? 0.0,
+                        longitude: Double(components[11]) ?? 0.0,
                         totalMaleToilets: Int(components[12]),
                         maleUrinals: Int(components[13]),
                         maleJapaneseStyle: Int(components[14]),
@@ -78,6 +79,7 @@ class PublicToiletManager: ObservableObject {
                         remarks: components[31].isEmpty ? nil : components[31]
                     )
                     toilets.append(toilet)
+                    _ = quadtree.insert(toilet:toilet)
                     
                     // dataSet2 の構造に合わせてデータを解析
                 } else if components.count == 44 {
@@ -93,8 +95,8 @@ class PublicToiletManager: ObservableObject {
                         address: components[7],
                         direction: nil, // dataSet2には方書がない
                         installationLocation: components[9],
-                        latitude: Double(components[13]),
-                        longitude: Double(components[12]),
+                        latitude: Double(components[13]) ?? 0.0,
+                        longitude: Double(components[12]) ?? 0.0,
                         totalMaleToilets: nil, // dataSet2には男性トイレ総数がない
                         maleUrinals: nil, // dataSet2には男性トイレ数がない
                         maleJapaneseStyle: nil, // dataSet2には男性トイレ数（和式）がない
@@ -117,11 +119,19 @@ class PublicToiletManager: ObservableObject {
                         remarks: components[37].isEmpty ? nil : components[37]
                     )
                     toilets.append(toilet)
+                    _ = quadtree.insert(toilet:toilet)
                 }
             }
             print("ファイル \(filePath) から \(toilets.count) 件のトイレ情報が読み込まれました。")
         } catch {
             print("ファイルの読み込みに失敗しました: \(error)")
+        }
+    }
+    
+    func findNearestToilets(currentLocation: CGPoint, maxResults: Int) {
+        nearestToilets = quadtree.queryNearest(point: currentLocation, maxResults: maxResults)
+        for toilet in nearestToilets {
+            print("最寄りのトイレ: \(toilet.name ?? "名称不明")")
         }
     }
     // お気に入りにトイレを追加
