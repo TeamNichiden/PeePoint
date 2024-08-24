@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct defaultSheetView: View {
+    let nearestToilets:[PublicToilet]
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("お近くのトイレ")
                 .font(.title)
                 .padding(.bottom)
-            ForEach(1...4, id: \.self) { _ in
+            ForEach(nearestToilets, id: \.self) { toilet in
                 HStack {
                     Image(systemName: "photo.artframe")
                         .frame(width: 30)
                     VStack(alignment: .leading) {
-                        Text("公園")
+                        Text("\(toilet.name!)")
                             .font(.system(size:13))
                         Text("徒歩 : 15分")
                             .font(.system(size:13))
@@ -53,6 +55,3 @@ extension Color {
     }
 }
 
-#Preview {
-    defaultSheetView()
-}

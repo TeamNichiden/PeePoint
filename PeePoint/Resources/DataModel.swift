@@ -19,8 +19,8 @@ struct PublicToilet: Codable,Hashable {
     let address: String?                  // 住所
     let direction: String?                // 方書
     let installationLocation: String?     // 設置位置
-    let latitude: Double?                 // 緯度
-    let longitude: Double?               // 経度
+    let latitude: Double               // 緯度
+    let longitude: Double               // 経度
     let totalMaleToilets: Int?            // 男性トイレ総数
     let maleUrinals: Int?                 // 男性トイレ数（小便器)
     let maleJapaneseStyle: Int?           // 男性トイレ数（和式）label

@@ -7,11 +7,20 @@
 
 import Foundation
 import SwiftData
+import CoreLocation
 
 // PublicToilet構造体は既に定義済みと仮定
 class PublicToiletManager: ObservableObject {
     @Published var toilets: [PublicToilet] = []
     let filePaths = ["utf8.csv","dataSet2.csv"]
+    private let favoritesKey = "favoriteToilets"
+    @Published var nearestToilets: [PublicToilet] = []
+    private let quadtree = QuadtreeNode(boundary: CGRect(x: -180, y: -90, width: 360, height: 180), capacity: 4)
+    @Published var favoriteToilets: [Int] = [] {
+    didSet {
+    saveFavorites()
+    }
+    }
     
     init() {
         for filePath in filePaths {
@@ -47,8 +56,8 @@ class PublicToiletManager: ObservableObject {
                         address: components[7],
                         direction: components[8].isEmpty ? nil : components[8],
                         installationLocation: components[9],
-                        latitude: Double(components[10]),
-                        longitude: Double(components[11]),
+                        latitude: Double(components[10]) ?? 0.0,
+                        longitude: Double(components[11]) ?? 0.0,
                         totalMaleToilets: Int(components[12]),
                         maleUrinals: Int(components[13]),
                         maleJapaneseStyle: Int(components[14]),
@@ -71,6 +80,7 @@ class PublicToiletManager: ObservableObject {
                         remarks: components[31].isEmpty ? nil : components[31]
                     )
                     toilets.append(toilet)
+                    _ = quadtree.insert(toilet:toilet)
                     
                     // dataSet2 の構造に合わせてデータを解析
                 } else if components.count == 44 {
@@ -86,8 +96,8 @@ class PublicToiletManager: ObservableObject {
                         address: components[7],
                         direction: nil, // dataSet2には方書がない
                         installationLocation: components[9],
-                        latitude: Double(components[13]),
-                        longitude: Double(components[12]),
+                        latitude: Double(components[13]) ?? 0.0,
+                        longitude: Double(components[12]) ?? 0.0,
                         totalMaleToilets: nil, // dataSet2には男性トイレ総数がない
                         maleUrinals: nil, // dataSet2には男性トイレ数がない
                         maleJapaneseStyle: nil, // dataSet2には男性トイレ数（和式）がない
@@ -112,12 +122,48 @@ class PublicToiletManager: ObservableObject {
                         remarks: components[37].isEmpty ? nil : components[37]
                     )
                     toilets.append(toilet)
+                    _ = quadtree.insert(toilet:toilet)
                 }
             }
             print("ファイル \(filePath) から \(toilets.count) 件のトイレ情報が読み込まれました。")
         } catch {
             print("ファイルの読み込みに失敗しました: \(error)")
         }
+    }
+    
+    func findNearestToilets(currentLocation: CLLocation, maxResults: Int) {
+        nearestToilets = quadtree.queryNearest(point: currentLocation, maxResults: maxResults)
+        for toilet in nearestToilets {
+            print("最寄りのトイレ: \(toilet.name ?? "名称不明")")
+        }
+    }
+    // お気に入りにトイレを追加
+    func addFavorite(toilet: PublicToilet) {
+    if !favoriteToilets.contains(toilet.number!) {
+    favoriteToilets.append(toilet.number!)
+    }
+    }
+    
+    // お気に入りからトイレを削除
+    func removeFavorite(toilet: PublicToilet) {
+    favoriteToilets.removeAll { $0 == toilet.number }
+    }
+    
+    // トイレが既にお気に入りに入っているか確認
+    func isFavorite(toilet: PublicToilet) -> Bool {
+    return favoriteToilets.contains(toilet.number!)
+    }
+    
+    // UserDefaultsにお気に入りを保存
+    private func saveFavorites() {
+    UserDefaults.standard.set(favoriteToilets, forKey: favoritesKey)
+    }
+    
+    // UserDefaultsからお気に入りを読み込む
+    private func loadFavorites() {
+    if let savedFavorites = UserDefaults.standard.array(forKey: favoritesKey) as? [Int] {
+    favoriteToilets = savedFavorites
+    }
     }
 }
 
@@ -129,67 +175,6 @@ class PublicToiletManager: ObservableObject {
  @Published var favoriteToilets: [Int] = [] {
  didSet {
  saveFavorites()
- }
- }
- 
- init(filePath: String) {
- // ファイルパスを取得
- if let path = Bundle.main.path(forResource: filePath, ofType: nil) {
- loadCSV(filePath: path)
- loadFavorites()
- } else {
- print("CSVファイル見つからない: \(filePath)")
- }
- }
- 
- func loadCSV(filePath: String) {
- do {
- let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
- let lines = fileContents.components(separatedBy: .newlines)
- let dataLines = lines.dropFirst()
- 
- for line in dataLines {
- guard !line.isEmpty else { continue }
- let components = line.components(separatedBy: ",")
- let toilet = PublicToilet(
- prefectureCode: Int(components[0]) ?? 0,
- number: Int(components[1]) ?? 0,
- prefectureName: components[2],
- cityName: components[3],
- name: components[4],
- nameKana: components[5],
- nameEnglish: components[6],
- address: components[7],
- direction: components[8].isEmpty ? nil : components[8],
- installationLocation: components[9],
- latitude: Double(components[10]) ?? 0.0,
- longitude: Double(components[11]) ?? 0.0,
- totalMaleToilets: Int(components[12]) ?? 0,
- maleUrinals: Int(components[13]) ?? 0,
- maleJapaneseStyle: Int(components[14]) ?? 0,
- maleWesternStyle: Int(components[15]) ?? 0,
- totalFemaleToilets: Int(components[16]) ?? 0,
- femaleJapaneseStyle: Int(components[17]) ?? 0,
- femaleWesternStyle: Int(components[18]) ?? 0,
- totalUnisexToilets: Int(components[19]) ?? 0,
- unisexJapaneseStyle: Int(components[20]) ?? 0,
- unisexWesternStyle: Int(components[21]) ?? 0,
- multifunctionalToilets: Int(components[22]) ?? 0,
- wheelchairAccessible: components[23],
- infantFacilities: components[24],
- ostomateFacilities: components[25],
- openingTime: components[26],
- closingTime: components[27],
- specialUsageNotes: components[28].isEmpty ? nil : components[28],
- image: components[29].isEmpty ? nil : components[29],
- imageLicense: components[30].isEmpty ? nil : components[30],
- remarks: components[31].isEmpty ? nil : components[31]
- )
- toilets.append(toilet)
- }
- print("トイレ情報が \(toilets.count) 件読み込まれました。")
- } catch {
- print("ファイルの読み込みに失敗しました: \(error)")
  }
  }
  

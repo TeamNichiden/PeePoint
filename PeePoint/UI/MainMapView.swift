@@ -20,6 +20,8 @@ struct MainMapView: View {
 
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
+    @StateObject private var quadtree = PublicToiletManager()
+    let currentLocation = CLLocation(latitude: 139.6917, longitude: 35.6895) // 東京駅付近
     
     //Sample List
     let items = ["江東区","江東区","江東区"]
@@ -70,16 +72,19 @@ struct MainMapView: View {
             .sheet(isPresented: $viewModel.showSheet) {
                 switch viewMNumber{
                 case 0:
-                    DetailView()
-                        .presentationDetents([.fraction(0.65), .large])
+                    defaultSheetView(nearestToilets:quadtree.nearestToilets)
+                        .presentationDetents([.medium])
                 case 1:
                     DetailView()
+                      .presentationDetents([.fraction(0.65), .large])
                         
                 default:
                     ContentView()
                 }
 
             }
+        }.onAppear {
+            quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
         }
 //        .background(isTap ? Color.white : Color.clear)
     }
