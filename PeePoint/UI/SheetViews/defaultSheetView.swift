@@ -8,44 +8,52 @@
 import SwiftUI
 
 struct defaultSheetView: View {
-    let nearestToilets:[PublicToilet]
+    @EnvironmentObject var toiletData:PublicToiletManager
     
     var body: some View {
         VStack(alignment: .leading) {
             Text("お近くのトイレ")
                 .font(.title)
                 .padding(.bottom)
-            ForEach(nearestToilets, id: \.self) { toilet in
-                HStack {
-                    Image(systemName: "photo.artframe")
-                        .frame(width: 30)
-                    VStack(alignment: .leading) {
-                        Text("\(toilet.name!)")
-                            .font(.system(size:13))
-                        Text("徒歩 : 15分")
-                            .font(.system(size:13))
+            
+            ScrollView{
+                ForEach(toiletData.nearestToilets, id: \.self) { toilet in
+                    HStack {
+                        Image("toilet-thumbnil")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width:50)
+                            .cornerRadius(5)
+
+                        VStack(alignment: .leading) {
+                            Text(toilet.address ?? "名前なし")
+                                .font(.headline)
+                            Text("徒歩 : 15分")
+                                .font(.system(size:13))
+                        }
+                        Spacer()
+                        //案内スタート
+                        Button(action: {
+                            //
+                        }) {
+                            Text("Direction")
+                                .foregroundColor(.white)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .frame(height:48)
+                                .background(Color.customColor)
+                                .cornerRadius(10)
+                                .padding(.leading)
+                        }
                     }
-                    Spacer()
-                    //案内スタート
-                    Button(action: {
-                        //
-                    }) {
-                        Text("Direction")
-                            .font(.system(size:17))
-                            .foregroundColor(.white)
-                            .font(.caption)
-                            .padding(.vertical,10)
-                            .padding(.horizontal,30)
-                            .background(Color.customColor)
-                            .cornerRadius(30)
-                            .shadow(color: .black, radius: 2)
-                    }
+                    .padding()
+                    .background(Color(hue: 1.0, saturation: 0.002, brightness: 0.863))
+                    .cornerRadius(15)
                 }
-                .padding()
-                .background(Color(hue: 1.0, saturation: 0.002, brightness: 0.963))
-                .cornerRadius(30)
             }
-        }.frame(width: UIScreen.main.bounds.width-50)
+        }
+        .padding()
+
     }
 }
 
@@ -55,3 +63,7 @@ extension Color {
     }
 }
 
+#Preview{
+    defaultSheetView()
+        .environmentObject(PublicToiletManager())
+}

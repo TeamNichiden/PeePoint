@@ -14,7 +14,12 @@ class PublicToiletManager: ObservableObject {
     @Published var toilets: [PublicToilet] = []
     let filePaths = ["utf8.csv","dataSet2.csv"]
     private let favoritesKey = "favoriteToilets"
-    @Published var nearestToilets: [PublicToilet] = []
+    @Published var nearestToilets: [PublicToilet] = [
+        PublicToilet(prefectureCode: 131083, number: 1, prefectureName: "東京都", cityName: "江東区", name: "江東区", nameKana: "", nameEnglish: "", address:"江東区立南砂六丁目公園内公衆便所", direction: nil, installationLocation: nil, latitude: 12.3, longitude: 12.3, totalMaleToilets: 4, maleUrinals: 2, maleJapaneseStyle: 2, maleWesternStyle: 1, totalFemaleToilets: 1, femaleJapaneseStyle: 1, femaleWesternStyle: 3, totalUnisexToilets: 2, unisexJapaneseStyle: 1, unisexWesternStyle: 1, multifunctionalToilets: 1, wheelchairAccessible: "1", infantFacilities: "4", ostomateFacilities: "1", openingTime: "5", closingTime: "1", specialUsageNotes: "1", image: ["",""], imageLicense: nil, remarks: nil),
+        PublicToilet(prefectureCode: 131083, number: 1, prefectureName: "東京都", cityName: "江東区", name: "江東区", nameKana: "", nameEnglish: "", address:"江東区立南砂六丁目公園内公衆便所", direction: nil, installationLocation: nil, latitude: 12.3, longitude: 12.3, totalMaleToilets: 4, maleUrinals: 2, maleJapaneseStyle: 2, maleWesternStyle: 1, totalFemaleToilets: 1, femaleJapaneseStyle: 1, femaleWesternStyle: 3, totalUnisexToilets: 2, unisexJapaneseStyle: 1, unisexWesternStyle: 1, multifunctionalToilets: 1, wheelchairAccessible: "1", infantFacilities: "4", ostomateFacilities: "1", openingTime: "5", closingTime: "1", specialUsageNotes: "1", image: ["",""], imageLicense: nil, remarks: nil),
+        PublicToilet(prefectureCode: 131083, number: 1, prefectureName: "東京都", cityName: "江東区", name: "江東区", nameKana: "", nameEnglish: "", address:"江東区立南砂六丁目公園内公衆便所", direction: nil, installationLocation: nil, latitude: 12.3, longitude: 12.3, totalMaleToilets: 4, maleUrinals: 2, maleJapaneseStyle: 2, maleWesternStyle: 1, totalFemaleToilets: 1, femaleJapaneseStyle: 1, femaleWesternStyle: 3, totalUnisexToilets: 2, unisexJapaneseStyle: 1, unisexWesternStyle: 1, multifunctionalToilets: 1, wheelchairAccessible: "1", infantFacilities: "4", ostomateFacilities: "1", openingTime: "5", closingTime: "1", specialUsageNotes: "1", image: ["",""], imageLicense: nil, remarks: nil),
+        PublicToilet(prefectureCode: 131083, number: 1, prefectureName: "東京都", cityName: "江東区", name: "江東区", nameKana: "", nameEnglish: "", address:"江東区立南砂六丁目公園内公衆便所", direction: nil, installationLocation: nil, latitude: 12.3, longitude: 12.3, totalMaleToilets: 4, maleUrinals: 2, maleJapaneseStyle: 2, maleWesternStyle: 1, totalFemaleToilets: 1, femaleJapaneseStyle: 1, femaleWesternStyle: 3, totalUnisexToilets: 2, unisexJapaneseStyle: 1, unisexWesternStyle: 1, multifunctionalToilets: 1, wheelchairAccessible: "1", infantFacilities: "4", ostomateFacilities: "1", openingTime: "5", closingTime: "1", specialUsageNotes: "1", image: ["",""], imageLicense: nil, remarks: nil)    
+    ]// DUMMY データです。削除してもいい
     private let quadtree = QuadtreeNode(boundary: CGRect(x: -180, y: -90, width: 360, height: 180), capacity: 4)
     @Published var favoriteToilets: [Int] = [] {
     didSet {
@@ -90,7 +95,7 @@ class PublicToiletManager: ObservableObject {
                         number: nil, // dataSet2にはNOがない
                         prefectureName: components[6],
                         cityName: components[7],
-                        name: components[10],
+                        name: components[9],
                         nameKana: nil, // dataSet2には名称_カナがない
                         nameEnglish: nil, // dataSet2には名称_英語がない
                         address: components[7],
@@ -109,13 +114,15 @@ class PublicToiletManager: ObservableObject {
                         unisexJapaneseStyle: nil, // dataSet2には男女共用トイレ数（和式）がない
                         unisexWesternStyle: nil, // dataSet2には男女共用トイレ数（洋式）がない
                         multifunctionalToilets: nil, // dataSet2には多機能トイレ数がない
-                        wheelchairAccessible: nil, // dataSet2には車椅子使用者用トイレ有無がない
-                        infantFacilities: nil, // dataSet2には乳幼児用設備設置トイレ有無がない
+                        wheelchairAccessible: components[18], // dataSet2には車椅子使用者用トイレ有無がない
+                        infantFacilities: components[25], // dataSet2には乳幼児用設備設置トイレ有無がない
                         ostomateFacilities: components[22],
                         openingTime: nil, // dataSet2には利用開始時間がない
                         closingTime: nil, // dataSet2には利用終了時間がない
                         specialUsageNotes: components[36].isEmpty ? nil : components[36],
-                        image: [components[38].isEmpty ? nil : components[38],components[39].isEmpty ? nil : components[39],components[40].isEmpty ? nil : components[40]],
+                        image: [components[37].isEmpty ? nil : components[37],
+                                components[38].isEmpty ? nil : components[38],
+                                components[39].isEmpty ? nil : components[39]],
                         imageLicense: nil, // dataSet2には画像ライセンスがない
                         remarks: components[37].isEmpty ? nil : components[37]
                     )
