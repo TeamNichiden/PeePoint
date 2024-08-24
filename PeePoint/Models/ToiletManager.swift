@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import CoreLocation
 
 // PublicToilet構造体は既に定義済みと仮定
 class PublicToiletManager: ObservableObject {
@@ -128,7 +129,7 @@ class PublicToiletManager: ObservableObject {
         }
     }
     
-    func findNearestToilets(currentLocation: CGPoint, maxResults: Int) {
+    func findNearestToilets(currentLocation: CLLocation, maxResults: Int) {
         nearestToilets = quadtree.queryNearest(point: currentLocation, maxResults: maxResults)
         for toilet in nearestToilets {
             print("最寄りのトイレ: \(toilet.name ?? "名称不明")")
