@@ -17,11 +17,6 @@ xcuserdata
 *.moved-aside
 Tanazam/.DS_Store
 
-# LicensePlist
-Tanazam/Settings.bundle/com.mono0926.LicensePlist.*
-Tanazam/Settings.bundle/com.mono0926.LicensePlist/*
-Tanzam/com.mono0926.LicensePlist.*
-Tanzam/com.mono0926.LicensePlist/*
 
 #CocoaPod
 Pods/*
