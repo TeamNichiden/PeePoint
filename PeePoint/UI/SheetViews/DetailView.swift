@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DetailView: View {
+
     @EnvironmentObject private var dataModel:PublicToiletManager
     var body: some View {
         VStack{
@@ -35,10 +36,12 @@ struct DetailView: View {
                 
             }
         }
+
     }
 }
 
 #Preview {
     DetailView()
         .environmentObject(PublicToiletManager())
+    
 }
