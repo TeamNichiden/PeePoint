@@ -59,20 +59,22 @@ struct MainMapView: View {
     @State private var isTap:Bool = false
     
     var body: some View {
-        ZStack{
+        ZStack {
             Map()
                 .ignoresSafeArea()
             VStack{
                 TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
                     isTap = item
                 })
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height:55)
-                    .background(.white)
-                    .cornerRadius(30)
-                    .padding()
-                
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(30)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(.gray,lineWidth:1))
+                .padding()
                 //検索欄
                 if isTap {
                     LazyVStack(alignment: .leading,spacing: 0) {
@@ -81,11 +83,16 @@ struct MainMapView: View {
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(.white)
-                                .border(Color.gray)
+                                .overlay(
+                                    Rectangle()
+                                        .frame(height:1)
+                                        .foregroundColor(.gray)
+                                        .padding(.top,34)
+                                        .padding(.horizontal)
+                                )
                         }
                     }
                 }
-                
                 Spacer()
                 
             }
@@ -102,12 +109,11 @@ struct MainMapView: View {
                 default:
                     ContentView()
                 }
-
+                
             }
         }.onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
         }
-//        .background(isTap ? Color.white : Color.clear)
     }
 }
 
