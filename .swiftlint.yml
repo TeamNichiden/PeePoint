@@ -1,0 +1,32 @@
+included:
+  - .
+
+excluded:
+  - Pods
+
+# 以下の2項目については、許容するが将来的には修正した方が良い
+disabled_rules:
+- identifier_name
+- type_name
+
+force_try:
+  severity: warning
+
+force_cast:
+  severity: warning
+
+line_length:
+  warning: 200
+
+function_body_length:
+  severity: warning
+
+cyclomatic_complexity:
+  warning: 10
+
+
+type_body_length:
+  severity: warning
+
+file_length:
+  warning: 350
