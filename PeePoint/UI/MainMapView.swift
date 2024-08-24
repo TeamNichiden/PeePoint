@@ -39,7 +39,7 @@ struct MainMapView: View {
     @State private var isTap:Bool = false
     
     var body: some View {
-        ZStack{
+        ZStack {
             Map()
                 .ignoresSafeArea()
             VStack{
@@ -51,8 +51,10 @@ struct MainMapView: View {
                     .frame(height:55)
                     .background(.white)
                     .cornerRadius(30)
+                    .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(.gray,lineWidth:1))
                     .padding()
-                
                 //検索欄
                 if isTap {
                     LazyVStack(alignment: .leading,spacing: 0) {
@@ -61,14 +63,20 @@ struct MainMapView: View {
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(.white)
-                                .border(Color.gray)
+                                .overlay(
+                                    Rectangle()
+                                        .frame(height:1)
+                                        .foregroundColor(.gray)
+                                        .padding(.top,34)
+                                        .padding(.horizontal)
+                                )
                         }
                     }
                 }
-                
                 Spacer()
                 
             }
+<<<<<<< HEAD
             .sheet(isPresented: $viewModel.showSheet) {
                 switch viewMNumber{
                 case 0:
@@ -85,8 +93,22 @@ struct MainMapView: View {
             }
         }.onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+=======
+>>>>>>> ReSearch
         }
-//        .background(isTap ? Color.white : Color.clear)
+        .sheet(isPresented: $viewModel.showSheet) {
+            switch viewMNumber{
+            case 0:
+                defaultSheetView()
+                    .presentationDetents([.medium])
+            case 1:
+                ContentView()
+                    
+            default:
+                ContentView()
+            }
+
+        }
     }
 }
 
