@@ -37,7 +37,7 @@ struct MainMapView: View {
     @State private var isTap:Bool = false
     
     var body: some View {
-        ZStack{
+        ZStack {
             Map()
                 .ignoresSafeArea()
             VStack{
@@ -49,39 +49,33 @@ struct MainMapView: View {
                     .frame(height:55)
                     .background(.white)
                     .cornerRadius(30)
+                    .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(.gray,lineWidth:1))
                     .padding()
-                
-                //検索欄
-                if isTap {
-                    LazyVStack(alignment: .leading,spacing: 0) {
-                        ForEach(listFiltered.indices, id: \.self) { index in
-                            Text(listFiltered[index])
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(.white)
-                                .border(Color.gray)
-                        }
-                    }
-                }
                 
                 Spacer()
                 
             }
-            .sheet(isPresented: $viewModel.showSheet) {
-                switch viewMNumber{
-                case 0:
-                    defaultSheetView()
-                        .presentationDetents([.medium])
-                case 1:
-                    ContentView()
-                        
-                default:
-                    ContentView()
-                }
-
+            
+            //検索欄
+            if isTap {
+                searchListView()
             }
         }
-//        .background(isTap ? Color.white : Color.clear)
+        .sheet(isPresented: $viewModel.showSheet) {
+            switch viewMNumber{
+            case 0:
+                defaultSheetView()
+                    .presentationDetents([.medium])
+            case 1:
+                ContentView()
+                    
+            default:
+                ContentView()
+            }
+
+        }
     }
 }
 

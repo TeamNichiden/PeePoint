@@ -39,6 +39,10 @@ struct searchListView: View {
                 .frame(height:55)
                 .background(.white)
                 .cornerRadius(30)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
                 .padding()
                 
                 //検索欄
@@ -49,16 +53,28 @@ struct searchListView: View {
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(.white)
-                                .border(Color.gray)
+                                .overlay(
+                                    Rectangle()
+                                        .frame(height:1)
+                                        .foregroundColor(.gray)
+                                        .padding(.top,34)
+                                        .padding(.horizontal)
+                                )
                         }
                     }
                 }
                 Spacer()
             }
         }
+//        .background(Color.backgroundColor)
     }
 }
 
+extension Color {
+    static var backgroundColor:Color {
+        return Color(red:0.9,green:0.9,blue:0.9)
+    }
+}
 #Preview {
     searchListView()
 }
