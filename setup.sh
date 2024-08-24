@@ -13,7 +13,7 @@ fi
 if ! command -v pod &> /dev/null
 then
     echo "CocoaPodsがインストールされていません。インストールします。"
-    sudo gem install cocoapods
+    brew install cocoapods
 else
     echo "CocoaPodsはすでにインストールされています。"
 fi
