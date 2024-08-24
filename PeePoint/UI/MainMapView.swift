@@ -19,6 +19,7 @@ struct MainMapView: View {
     var viewMNumber : Int = 0
     @StateObject private var dataModel = PublicToiletManager(filePath: "utf-8")
     @StateObject private var viewModel = MapViewModel()
+    
     var body: some View {
         ZStack{
             Map()
