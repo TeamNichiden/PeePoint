@@ -6,6 +6,7 @@
 //
 
 import MapKit
+import CoreLocation
 
 
 class MapViewModel: ObservableObject{
@@ -17,12 +18,16 @@ import SwiftUI
 
 struct MainMapView: View {
     var viewMNumber : Int = 0
-
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
+    @StateObject private var mapModel = MapRouteModel()
     let currentLocation = CLLocation(latitude: 139.6917, longitude: 35.6895) // 東京駅付近
-    
+    @State private var cameraPosition = MapCameraPosition.region(MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),
+            latitudinalMeters: 500,
+            longitudinalMeters: 500
+        ))
     //Sample List
     let items = ["江東区","江東区","江東区"]
     //Sampleフィルター
@@ -40,8 +45,24 @@ struct MainMapView: View {
     
     var body: some View {
         ZStack{
-            Map()
-                .ignoresSafeArea()
+            
+            Map(position: $cameraPosition) {
+                UserAnnotation()
+                ForEach(quadtree.toilets) { location in
+                    
+                    Annotation(location.name ?? "", coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)){
+                        VStack{
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+                }
+                if let route = mapModel.route {
+                    MapPolyline(route)
+                        .stroke(Color.blue, lineWidth: 5)
+                }
+            }
             VStack{
                 TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
                     isTap = item
@@ -83,7 +104,9 @@ struct MainMapView: View {
 
             }
         }.onAppear {
-            quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+            quadtree.findNearestToilets(currentLocation: currentLocation/*現在地*/, maxResults: 4)
+            
+            
         }
 //        .background(isTap ? Color.white : Color.clear)
     }
