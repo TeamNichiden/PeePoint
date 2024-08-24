@@ -17,7 +17,7 @@ import SwiftUI
 
 struct MainMapView: View {
     var viewMNumber : Int = 0
-    @StateObject private var dataModel = PublicToiletManager(filePath: "utf-8")
+    @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     var body: some View {
         ZStack{
@@ -54,4 +54,5 @@ struct MainMapView: View {
 
 #Preview {
     MainMapView()
+        .environmentObject(PublicToiletManager())
 }

@@ -11,7 +11,9 @@ import SwiftUI
 struct PeePointApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DetailView()
+                .environmentObject(PublicToiletManager())
+                                   
         }
     }
 }
