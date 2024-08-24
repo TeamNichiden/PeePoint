@@ -27,7 +27,7 @@ private class QuadtreeNode {
     }
     
     // 座標を挿入する
-    private func insert(toilet: PublicToilet) -> Bool {
+    func insert(toilet: PublicToilet) -> Bool {
         let point = CGPoint(x: toilet.longitude, y: toilet.latitude)
         
         guard boundary.contains(point) else {
