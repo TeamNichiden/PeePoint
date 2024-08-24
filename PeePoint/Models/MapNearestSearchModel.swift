@@ -75,33 +75,38 @@ class QuadtreeNode {
         divided = true
     }
     
-    // 最近傍のトイレを探す
-    func queryNearest(point: CGPoint) -> Toilet? {
-        var closestToilet: Toilet?
-        var closestDistance = CGFloat.greatestFiniteMagnitude
+    // 複数の最寄りトイレを探す
+    func queryNearest(point: CGPoint, maxResults: Int) -> [Toilet] {
+        var closestToilets: [Toilet] = []
+        var distances: [(Toilet, CGFloat)] = []
         
         for toilet in toilets {
             let toiletPoint = CGPoint(x: toilet.coordinate.longitude, y: toilet.coordinate.latitude)
             let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
-            if distance < closestDistance {
-                closestDistance = distance
-                closestToilet = toilet
-            }
+            distances.append((toilet, distance))
         }
         
         if divided {
             let nodes = [northeast, northwest, southeast, southwest]
             for node in nodes {
                 if node!.boundary.contains(point) {
-                    if let nearest = node!.queryNearest(point: point),
-                       hypot(nearest.coordinate.longitude - point.x, nearest.coordinate.latitude - point.y) < closestDistance {
-                        closestToilet = nearest
+                    let nearestInChild = node!.queryNearest(point: point, maxResults: maxResults)
+                    for toilet in nearestInChild {
+                        let toiletPoint = CGPoint(x: toilet.coordinate.longitude, y: toilet.coordinate.latitude)
+                        let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
+                        distances.append((toilet, distance))
                     }
                 }
             }
         }
         
-        return closestToilet
+        distances.sort { $0.1 < $1.1 }
+        
+        for (toilet, _) in distances.prefix(maxResults) {
+            closestToilets.append(toilet)
+        }
+        
+        return closestToilets
     }
 }
 
