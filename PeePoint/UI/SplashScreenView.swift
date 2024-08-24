@@ -17,7 +17,7 @@ struct SplashScreenView: View {
             Image("iconimg")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 350)
+                .frame(width: 250)
                 .opacity(iconOpacity)
         }
         .onAppear() {
