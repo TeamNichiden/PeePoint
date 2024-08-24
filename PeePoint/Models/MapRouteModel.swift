@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 
-private class LocationModel: ObservableObject {
+class LocationModel: ObservableObject {
     public static let shared = LocationModel()
     private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
@@ -16,7 +16,7 @@ private class LocationModel: ObservableObject {
     private var timer: Timer?
     @Published var isArrived = false
 
-    private func startFetchingRoute(to destination: CLLocationCoordinate2D) {
+    func startFetchingRoute(to destination: CLLocationCoordinate2D) {
         stopFetchingRoute() // 既存のタイマーを停止
         fetchRoute(destination: destination) // 初回のルート取得
 
