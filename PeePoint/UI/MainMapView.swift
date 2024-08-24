@@ -9,12 +9,15 @@ import MapKit
 
 
 class MapViewModel: ObservableObject{
+    @Published var showSheet : Bool = true
     @Published var searchText : String = ""
 }
 
 import SwiftUI
 
 struct MainMapView: View {
+    var viewMNumber : Int = 0
+    @StateObject private var dataModel = PublicToiletManager(filePath: "utf-8")
     @StateObject private var viewModel = MapViewModel()
     var body: some View {
         ZStack{
@@ -31,6 +34,19 @@ struct MainMapView: View {
 
                 Spacer()
                 
+            }
+            .sheet(isPresented: $viewModel.showSheet) {
+                switch viewMNumber{
+                case 0:
+                    ContentView()
+                        .presentationDetents([.medium])
+                case 1:
+                    ContentView()
+                        
+                default:
+                    ContentView()
+                }
+
             }
         }
     }
