@@ -4,19 +4,39 @@
 //
 //  Created by Hlwan Aung Phyo on 8/24/24.
 //
-
+import SwiftUI
 import MapKit
 
-
-class MapViewModel: ObservableObject{
-    @Published var showSheet : Bool = true
-    @Published var searchText : String = ""
+class MapViewModel: ObservableObject {
+    @Published var showSheet: Bool = true
+    @Published var searchText: String = ""
+    @Published var viewNumber: Int = 0 {
+        didSet {
+            sheetSize = calculateSheetSize()
+        }
+    }
+    
+    @Published var sheetSize: Double = 0.75
+    
+    init() {
+        sheetSize = calculateSheetSize()
+    }
+    
+    
+    private func calculateSheetSize() -> Double {
+        switch viewNumber {
+        case 0:
+            return 0.35
+        case 1:
+            return 0.75
+        default:
+            return 0.35
+        }
+    }
 }
 
-import SwiftUI
 
 struct MainMapView: View {
-    var viewMNumber : Int = 0
     
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
@@ -77,14 +97,15 @@ struct MainMapView: View {
                 
             }
             .sheet(isPresented: $viewModel.showSheet) {
-                switch viewMNumber{
+                switch viewModel.viewNumber{
                 case 0:
-                    defaultSheetView(nearestToilets:quadtree.nearestToilets)
-                        .presentationDetents([.medium])
+                    defaultSheetView()
+                        .presentationDetents([.fraction(0.35), .medium])
+                        .interactiveDismissDisabled()
                 case 1:
                     DetailView()
-                        .presentationDetents([.fraction(0.65), .large])
-                    
+                        .presentationDetents([.fraction(0.75), .fraction(0.75)])
+                        .interactiveDismissDisabled()
                 default:
                     ContentView()
                 }
