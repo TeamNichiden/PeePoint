@@ -9,7 +9,7 @@ import CoreGraphics
 import Foundation
 
 // Quadtreeのノード
-private class QuadtreeNode {
+class QuadtreeNode {
     private let boundary: CGRect
     private let capacity: Int
     private var toilets: [PublicToilet]
@@ -69,7 +69,7 @@ private class QuadtreeNode {
     }
     
     // 複数の最寄りトイレを探す
-    private func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
+    func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
         var closestToilets: [PublicToilet] = []
         var distances: [(PublicToilet, CGFloat)] = []
         
