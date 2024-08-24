@@ -17,7 +17,7 @@ import SwiftUI
 
 struct MainMapView: View {
     var viewMNumber : Int = 0
-
+    
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
@@ -46,15 +46,15 @@ struct MainMapView: View {
                 TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
                     isTap = item
                 })
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height:55)
-                    .background(.white)
-                    .cornerRadius(30)
-                    .overlay(
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(30)
+                .overlay(
                     RoundedRectangle(cornerRadius: 30)
                         .stroke(.gray,lineWidth:1))
-                    .padding()
+                .padding()
                 //検索欄
                 if isTap {
                     LazyVStack(alignment: .leading,spacing: 0) {
@@ -76,7 +76,6 @@ struct MainMapView: View {
                 Spacer()
                 
             }
-<<<<<<< HEAD
             .sheet(isPresented: $viewModel.showSheet) {
                 switch viewMNumber{
                 case 0:
@@ -84,30 +83,15 @@ struct MainMapView: View {
                         .presentationDetents([.medium])
                 case 1:
                     DetailView()
-                      .presentationDetents([.fraction(0.65), .large])
-                        
+                        .presentationDetents([.fraction(0.65), .large])
+                    
                 default:
                     ContentView()
                 }
-
+                
             }
         }.onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
-=======
->>>>>>> ReSearch
-        }
-        .sheet(isPresented: $viewModel.showSheet) {
-            switch viewMNumber{
-            case 0:
-                defaultSheetView()
-                    .presentationDetents([.medium])
-            case 1:
-                ContentView()
-                    
-            default:
-                ContentView()
-            }
-
         }
     }
 }
