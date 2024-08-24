@@ -9,16 +9,16 @@ import CoreGraphics
 import Foundation
 
 // Quadtreeのノード
-class QuadtreeNode {
-    let boundary: CGRect
-    let capacity: Int
-    var toilets: [PublicToilet]
-    var divided: Bool = false
+private class QuadtreeNode {
+    private let boundary: CGRect
+    private let capacity: Int
+    private var toilets: [PublicToilet]
+    private var divided: Bool = false
     
-    var northeast: QuadtreeNode?
-    var northwest: QuadtreeNode?
-    var southeast: QuadtreeNode?
-    var southwest: QuadtreeNode?
+    private var northeast: QuadtreeNode?
+    private var northwest: QuadtreeNode?
+    private var southeast: QuadtreeNode?
+    private var southwest: QuadtreeNode?
     
     init(boundary: CGRect, capacity: Int) {
         self.boundary = boundary
@@ -27,7 +27,7 @@ class QuadtreeNode {
     }
     
     // 座標を挿入する
-    func insert(toilet: PublicToilet) -> Bool {
+    private func insert(toilet: PublicToilet) -> Bool {
         let point = CGPoint(x: toilet.longitude, y: toilet.latitude)
         
         guard boundary.contains(point) else {
@@ -49,7 +49,7 @@ class QuadtreeNode {
     }
     
     // クワッドを分割する
-    func subdivide() {
+    private func subdivide() {
         let x = boundary.origin.x
         let y = boundary.origin.y
         let w = boundary.size.width / 2
@@ -69,7 +69,7 @@ class QuadtreeNode {
     }
     
     // 複数の最寄りトイレを探す
-    func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
+    private func queryNearest(point: CGPoint, maxResults: Int) -> [PublicToilet] {
         var closestToilets: [PublicToilet] = []
         var distances: [(PublicToilet, CGFloat)] = []
         
