@@ -40,7 +40,7 @@ struct MainMapView: View {
             .sheet(isPresented: $viewModel.showSheet) {
                 switch viewMNumber{
                 case 0:
-                    ContentView()
+                    defaultSheetView()
                         .presentationDetents([.medium])
                 case 1:
                     ContentView()
