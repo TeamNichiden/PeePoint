@@ -8,15 +8,17 @@
 import Foundation
 import MapKit
 
-private class LocationModel: ObservableObject {
+class LocationModel: ObservableObject {
     public static let shared = LocationModel()
+
     private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
     @Published var isFetchingRoute = false
     private var timer: Timer?
+
     @Published var isArrived = false
 
-    private func startFetchingRoute(to destination: CLLocationCoordinate2D) {
+    func startFetchingRoute(to destination: CLLocationCoordinate2D) {
         stopFetchingRoute() // 既存のタイマーを停止
         fetchRoute(destination: destination) // 初回のルート取得
 
@@ -28,7 +30,9 @@ private class LocationModel: ObservableObject {
         }
     }
     
+
     private func checkArriaval(destination: CLLocationCoordinate2D) {
+
         guard let currentLocation = locationManager.location else {
             print("Failed to get current location.")
             return
@@ -46,14 +50,18 @@ private class LocationModel: ObservableObject {
         }
     }
 
+
     private func stopFetchingRoute() {
+
         timer?.invalidate()
         timer = nil
         route = nil
         isFetchingRoute = false
     }
 
+
     private func fetchRoute(destination: CLLocationCoordinate2D) {
+
         guard let currentLocation = locationManager.location else {
             print("Failed to get current location.")
             return
