@@ -75,7 +75,8 @@ struct MainMapView: View {
                     defaultSheetView(nearestToilets:quadtree.nearestToilets)
                         .presentationDetents([.medium])
                 case 1:
-                    ContentView()
+                    DetailView()
+                      .presentationDetents([.fraction(0.65), .large])
                         
                 default:
                     ContentView()

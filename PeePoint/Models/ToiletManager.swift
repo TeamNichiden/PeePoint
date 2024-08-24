@@ -90,7 +90,7 @@ class PublicToiletManager: ObservableObject {
                         number: nil, // dataSet2にはNOがない
                         prefectureName: components[6],
                         cityName: components[7],
-                        name: components[10],
+                        name: components[9],
                         nameKana: nil, // dataSet2には名称_カナがない
                         nameEnglish: nil, // dataSet2には名称_英語がない
                         address: components[7],
@@ -109,13 +109,15 @@ class PublicToiletManager: ObservableObject {
                         unisexJapaneseStyle: nil, // dataSet2には男女共用トイレ数（和式）がない
                         unisexWesternStyle: nil, // dataSet2には男女共用トイレ数（洋式）がない
                         multifunctionalToilets: nil, // dataSet2には多機能トイレ数がない
-                        wheelchairAccessible: nil, // dataSet2には車椅子使用者用トイレ有無がない
-                        infantFacilities: nil, // dataSet2には乳幼児用設備設置トイレ有無がない
+                        wheelchairAccessible: components[18], // dataSet2には車椅子使用者用トイレ有無がない
+                        infantFacilities: components[25], // dataSet2には乳幼児用設備設置トイレ有無がない
                         ostomateFacilities: components[22],
                         openingTime: nil, // dataSet2には利用開始時間がない
                         closingTime: nil, // dataSet2には利用終了時間がない
                         specialUsageNotes: components[36].isEmpty ? nil : components[36],
-                        image: [components[38].isEmpty ? nil : components[38],components[39].isEmpty ? nil : components[39],components[40].isEmpty ? nil : components[40]],
+                        image: [components[37].isEmpty ? nil : components[37],
+                                components[38].isEmpty ? nil : components[38],
+                                components[39].isEmpty ? nil : components[39]],
                         imageLicense: nil, // dataSet2には画像ライセンスがない
                         remarks: components[37].isEmpty ? nil : components[37]
                     )
