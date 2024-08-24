@@ -13,7 +13,6 @@ struct PeePointApp: App {
         WindowGroup {
             MainMapView()
                 .environmentObject(PublicToiletManager())
-                                   
         }
     }
 }
