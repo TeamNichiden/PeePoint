@@ -30,7 +30,7 @@ class QuadtreeNode {
     // 座標を挿入する
 
     func insert(toilet: PublicToilet) -> Bool {
-        let point = CGPoint(x: toilet.longitude, y: toilet.latitude)
+        let point = CGPoint(x: toilet.longitude!, y: toilet.latitude!)
 
         
         guard boundary.contains(point) else {
@@ -79,7 +79,7 @@ class QuadtreeNode {
         var distances: [(PublicToilet, CGFloat)] = []
         
         for toilet in toilets {
-            let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
+            let toiletPoint = CGPoint(x: toilet.longitude!, y: toilet.latitude!)
 
           
             let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
@@ -93,7 +93,7 @@ class QuadtreeNode {
                     let nearestInChild = node!.queryNearest(point: point, maxResults: maxResults)
                     for toilet in nearestInChild {
 
-                        let toiletPoint = CGPoint(x: toilet.longitude, y: toilet.latitude)
+                        let toiletPoint = CGPoint(x: toilet.longitude!, y: toilet.latitude!)
 
                         let distance = hypot(toiletPoint.x - point.x, toiletPoint.y - point.y)
                         distances.append((toilet, distance))

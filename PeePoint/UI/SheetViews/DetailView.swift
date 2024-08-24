@@ -43,4 +43,5 @@ struct DetailView: View {
 #Preview {
     DetailView()
         .environmentObject(PublicToiletManager())
-
+    
+}

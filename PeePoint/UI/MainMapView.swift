@@ -57,4 +57,5 @@ struct MainMapView: View {
 #Preview {
     MainMapView()
         .environmentObject(PublicToiletManager())
-
+    
+}

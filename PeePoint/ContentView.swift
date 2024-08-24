@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-@StateObject private var viewModel = PublicToiletManager(filePath: "utf-8")
+@StateObject private var viewModel = PublicToiletManager()
   var body: some View {
     VStack {
 //      Map()
