@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct defaultSheetView: View {
+    @StateObject private var quadtree = PublicToiletManager()
+    let currentLocation = CGPoint(x: 139.6917, y: 35.6895) // 東京駅付近
+    
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("お近くのトイレ")
                 .font(.title)
                 .padding(.bottom)
-            ForEach(1...4, id: \.self) { _ in
+            ForEach(quadtree.nearestToilets, id: \.self) { toilet in
                 HStack {
                     Image(systemName: "photo.artframe")
                         .frame(width: 30)
                     VStack(alignment: .leading) {
-                        Text("公園")
+                        Text("\(toilet.name!)")
                             .font(.system(size:13))
                         Text("徒歩 : 15分")
                             .font(.system(size:13))
@@ -44,6 +48,9 @@ struct defaultSheetView: View {
                 .cornerRadius(30)
             }
         }.frame(width: UIScreen.main.bounds.width-50)
+            .onAppear {
+                quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+            }
     }
 }
 
