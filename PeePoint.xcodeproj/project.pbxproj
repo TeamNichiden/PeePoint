@@ -12,6 +12,7 @@
 		50FAC95961FDF1AD78B0B756 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E6CB8076DD2381495F2EFA /* ContentView.swift */; };
 		8603B9AED13E37F3410BB135 /* SwiftLint in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DEEE615E9FC9B0DBC589557 /* SwiftLint */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8A1F2D69EB4342AC47928312 /* SwiftLint in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DEEE615E9FC9B0DBC589557 /* SwiftLint */; };
+		B6A8D9F22C7977EC0013F4DA /* utf-8.csv in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D9F12C7977EC0013F4DA /* utf-8.csv */; };
 		D14683AF236057DBA03E1EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06412E4A04F3CD1395885556 /* Assets.xcassets */; };
 		DB46AE51A92639AA6AF818A0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBAFE3ACBEE9E942899A07A5 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -39,6 +40,7 @@
 		4DEEE615E9FC9B0DBC589557 /* SwiftLint */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftLint; path = Pods/SwiftLint; sourceTree = "<group>"; };
 		89964768A945D9C35467F3BA /* PeePoint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeePoint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1CB59E1AC3CFB37F6087219 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B6A8D9F12C7977EC0013F4DA /* utf-8.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "utf-8.csv"; sourceTree = "<group>"; };
 		DBAFE3ACBEE9E942899A07A5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E5E6CB8076DD2381495F2EFA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,11 +98,20 @@
 		7E01DDEBD09CBD9170E4E4D4 = {
 			isa = PBXGroup;
 			children = (
+				B6A8D9F02C7977D40013F4DA /* Resources */,
 				42590747FB506B7BB243AA23 /* PeePoint */,
 				DA59729B47FDBDD17B9C7FEB /* Frameworks */,
 				0D9D3CD11DEB389892923831 /* Products */,
 				4135A2D66463D4F603DCE7D4 /* Pods */,
 			);
+			sourceTree = "<group>";
+		};
+		B6A8D9F02C7977D40013F4DA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B6A8D9F12C7977EC0013F4DA /* utf-8.csv */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		DA59729B47FDBDD17B9C7FEB /* Frameworks */ = {
@@ -166,6 +177,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6A8D9F22C7977EC0013F4DA /* utf-8.csv in Resources */,
 				D14683AF236057DBA03E1EB1 /* Assets.xcassets in Resources */,
 				DB46AE51A92639AA6AF818A0 /* Preview Assets.xcassets in Resources */,
 			);

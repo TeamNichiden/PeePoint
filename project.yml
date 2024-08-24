@@ -1,0 +1,35 @@
+name: PeePoint
+options:
+  bundleIdPrefix: com.iyas
+  deploymentTarget:
+    iOS: '17.0'
+    indentWidth: 2
+    tabWidth: 2
+    organizationName: "iyas"
+
+targets:
+  PeePoint:
+    type: application
+    platform: iOS
+    sources: [PeePoint]
+    resources: [Resources]
+    dependencies:
+      - framework: Pods/SwiftLint
+    settings:
+      base:
+        INFOPLIST_FILE: PeePoint/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.iyas.peepoint
+        SWIFT_VERSION: 5.0
+    buildPhases:
+        - name: Run SwiftLint
+          script: |
+            export PATH="$PATH:/opt/homebrew/bin"
+            if which swiftlint > /dev/null; then
+            swiftlint
+            else
+            echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
+            fi
+          inputFiles:
+            - '**/*.swift'
+          outputFiles:
+            - $(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/SwiftLintReport.txt
