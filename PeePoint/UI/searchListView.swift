@@ -1,27 +1,17 @@
 //
-//  MainMapView.swift
+//  searchListView.swift
 //  PeePoint
 //
-//  Created by Hlwan Aung Phyo on 8/24/24.
+//  Created by cmStudent on 2024/08/24.
 //
-
-import MapKit
-
-
-class MapViewModel: ObservableObject{
-    @Published var showSheet : Bool = true
-    @Published var searchText : String = ""
-}
 
 import SwiftUI
 
-struct MainMapView: View {
+struct searchListView: View {
     var viewMNumber : Int = 0
-
+    
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
-    @StateObject private var quadtree = PublicToiletManager()
-    let currentLocation = CGPoint(x: 139.6917, y: 35.6895) // 東京駅付近
     
     //Sample List
     let items = ["江東区","江東区","江東区"]
@@ -40,18 +30,16 @@ struct MainMapView: View {
     
     var body: some View {
         ZStack{
-            Map()
-                .ignoresSafeArea()
             VStack{
                 TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
                     isTap = item
                 })
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height:55)
-                    .background(.white)
-                    .cornerRadius(30)
-                    .padding()
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(30)
+                .padding()
                 
                 //検索欄
                 if isTap {
@@ -65,32 +53,12 @@ struct MainMapView: View {
                         }
                     }
                 }
-                
                 Spacer()
-                
             }
-            .sheet(isPresented: $viewModel.showSheet) {
-                switch viewMNumber{
-                case 0:
-                    defaultSheetView(nearestToilets:quadtree.nearestToilets)
-                        .presentationDetents([.medium])
-                case 1:
-                    ContentView()
-                        
-                default:
-                    ContentView()
-                }
-
-            }
-        }.onAppear {
-            quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
         }
-//        .background(isTap ? Color.white : Color.clear)
     }
 }
 
 #Preview {
-    MainMapView()
-        .environmentObject(PublicToiletManager())
-    
+    searchListView()
 }
