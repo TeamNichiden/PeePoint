@@ -8,7 +8,7 @@ import SwiftUI
 import MapKit
 
 class MapViewModel: ObservableObject {
-    @Published var showSheet: Bool = false
+    @Published var showSheet: Bool = true
     @Published var searchText: String = ""
     @Published var viewNumber: Int = 0 {
         didSet {
