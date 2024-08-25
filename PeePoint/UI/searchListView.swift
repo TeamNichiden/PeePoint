@@ -9,8 +9,10 @@ import SwiftUI
 
 //SearchBar_Sample
 struct searchListView: View {
-    var viewMNumber : Int = 0
-    
+    @Binding var isPresented:Bool
+    @Binding var showDetailView:Bool
+    @Binding var selectedToilet:PublicToilet?
+    @State var searchText = ""
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     
@@ -28,49 +30,44 @@ struct searchListView: View {
     }
     
     @State private var isTap:Bool = true
-    
+    @FocusState private var focused : Bool
     var body: some View {
-        NavigationStack {
-            ZStack{
-                VStack{
-                    TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
-                        isTap = item
-                    })
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height:55)
-                    .background(.white)
-                    .cornerRadius(30)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
-                    .padding()
-                    
-                    //検索欄
-                    if isTap {
-                        LazyVStack(alignment: .leading,spacing: 0) {
-                            ForEach(listFiltered.indices, id: \.self) { index in
-                                
-                                NavigationLink(destination:MainMapView()) {
-                                    Text(listFiltered[index])
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                        .background(.white)
-                                        .overlay(
-                                            Rectangle()
-                                                .frame(height:1)
-                                                .foregroundColor(.gray)
-                                                .padding(.top,34)
-                                                .padding(.horizontal)
-                                        )
-                                }
-                                
-                            }
-                        }
-                    }
-                    Spacer()
+        VStack{
+            HStack{
+                Button {
+                    isPresented = false
+                } label: {
+                    Image(systemName: "arrow.left")
+                        .font(.title)
+                        .padding()
+                        .foregroundColor(.black)
                 }
+                
+                
+                Spacer()
+            }
+            TextField("検索",text: $searchText)
+                .padding(.leading)
+                .font(.headline)
+                .foregroundColor(.gray)
+                .font(.headline)
+                .frame(maxWidth: .infinity,alignment: .leading)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(10)
+                .padding()
+                .shadow(radius:10, y:5)
+            
+            
+            Spacer()
+            
+            List(dataModel.toilets,id:\.self){toilet in
+                Text(toilet.address ?? "名前なし")
+                    .onTapGesture {
+                        isPresented = false
+                        showDetailView = true
+                        selectedToilet = toilet
+                    }
             }
         }
     }
@@ -80,7 +77,4 @@ extension Color {
     static var backgroundColor:Color {
         return Color(red:0.9,green:0.9,blue:0.9)
     }
-}
-#Preview {
-    searchListView()
 }

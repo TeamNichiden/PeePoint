@@ -12,7 +12,6 @@ struct DetailView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     
     var body: some View {
-        NavigationStack {
             ZStack{
                 ScrollView{
                     LazyVStack {
@@ -32,7 +31,7 @@ struct DetailView: View {
             }
         }
     }
-}
+
 
 
 //FUNCTIONS
