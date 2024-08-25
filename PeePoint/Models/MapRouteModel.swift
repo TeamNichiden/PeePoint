@@ -8,13 +8,21 @@
 import Foundation
 import MapKit
 
-class LocationModel: ObservableObject {
-    public static let shared = LocationModel()
-    var locationManager = CLLocationManager()
+class MapRouteModel: ObservableObject {
+    public static let shared = MapRouteModel()
+
+    private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
     @Published var isFetchingRoute = false
-    var timer: Timer?
+    @Published var currentLocation: CLLocation?
+    private var timer: Timer?
+
     @Published var isArrived = false
+    
+    init() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
 
     func startFetchingRoute(to destination: CLLocationCoordinate2D) {
         stopFetchingRoute() // 既存のタイマーを停止
@@ -28,7 +36,9 @@ class LocationModel: ObservableObject {
         }
     }
     
-    func checkArriaval(destination: CLLocationCoordinate2D) {
+
+    private func checkArriaval(destination: CLLocationCoordinate2D) {
+
         guard let currentLocation = locationManager.location else {
             print("Failed to get current location.")
             return
@@ -46,14 +56,18 @@ class LocationModel: ObservableObject {
         }
     }
 
-    func stopFetchingRoute() {
+
+    private func stopFetchingRoute() {
+
         timer?.invalidate()
         timer = nil
         route = nil
         isFetchingRoute = false
     }
 
-    func fetchRoute(destination: CLLocationCoordinate2D) {
+
+    private func fetchRoute(destination: CLLocationCoordinate2D) {
+
         guard let currentLocation = locationManager.location else {
             print("Failed to get current location.")
             return
@@ -72,5 +86,9 @@ class LocationModel: ObservableObject {
                 self.route = response?.routes.first
             }
         }
+    }
+    
+    private func updatecurrentLocation() {
+        locationManager.requestLocation()
     }
 }
