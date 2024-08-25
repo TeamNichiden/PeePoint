@@ -101,7 +101,7 @@ class PublicToiletManager: ObservableObject {
                         address: components[7],
                         direction: nil, // dataSet2には方書がない
                         installationLocation: components[9],
-                        latitude: Double(components[13]) ?? 0.0,
+                        latitude: Double(components[11]) ?? 0.0,
                         longitude: Double(components[12]) ?? 0.0,
                         totalMaleToilets: nil, // dataSet2には男性トイレ総数がない
                         maleUrinals: nil, // dataSet2には男性トイレ数がない

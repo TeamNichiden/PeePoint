@@ -33,11 +33,6 @@ struct NaviView: View {
                     //                        .font(.system(size:40))
                     //                        .foregroundColor(.black)
                     //                }
-                    NavigationLink(destination: searchListView()) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size:40))
-                            .foregroundColor(.black)
-                    }
                     //終了ボタン
                     Button(action: {
                         //終了
