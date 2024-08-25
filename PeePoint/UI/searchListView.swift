@@ -1,39 +1,21 @@
-//
-//  searchListView.swift
-//  PeePoint
-//
-//  Created by cmStudent on 2024/08/24.
-//
-
 import SwiftUI
 
-//SearchBar_Sample
 struct searchListView: View {
-    @Binding var isPresented:Bool
-    @Binding var showDetailView:Bool
-    @Binding var selectedToilet:PublicToilet?
+    @Binding var isPresented: Bool
+    @Binding var showDetailView: Bool
+    @Binding var selectedToilet: PublicToilet?
+    @Binding var filterByWheelchairAccessible: Bool
+    @Binding var filterByInfantFacilities: Bool
+    @Binding var filterByOstomateFacilities: Bool
+    @Binding var filterByunisexJapaneseStyle: Bool
+    @Binding var filterByunisexWesternStyle: Bool
+    @Binding var filterBymultifunctionalToilets: Bool
     @State var searchText = ""
     @EnvironmentObject private var dataModel: PublicToiletManager
-    @StateObject private var viewModel = MapViewModel()
-    
-    //Sample List
-    let items = ["江東区","江東区","江東区"]
-    //Sampleフィルター
-    private var listFiltered: [String] {
-        if viewModel.searchText.isEmpty {
-            return items
-        } else {
-            return items.filter {
-                $0.localizedStandardContains(viewModel.searchText)
-            }
-        }
-    }
-    
-    @State private var isTap:Bool = true
-    @FocusState private var focused : Bool
+
     var body: some View {
-        VStack{
-            HStack{
+        VStack {
+            HStack {
                 Button {
                     isPresented = false
                 } label: {
@@ -42,26 +24,93 @@ struct searchListView: View {
                         .padding()
                         .foregroundColor(.black)
                 }
-                
-                
                 Spacer()
             }
-            TextField("検索",text: $searchText)
+            
+            TextField("検索", text: $searchText)
                 .padding(.leading)
                 .font(.headline)
                 .foregroundColor(.gray)
-                .font(.headline)
-                .frame(maxWidth: .infinity,alignment: .leading)
-                .frame(height:55)
-                .background(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 55)
+                .background(Color.white)
                 .cornerRadius(10)
                 .padding()
-                .shadow(radius:10, y:5)
+                .shadow(radius: 10, y: 5)
             
+            ScrollView(.horizontal,showsIndicators: false){
+                HStack {
+                    Button(action: {
+                        filterByWheelchairAccessible.toggle()
+                    }) {
+                        Text("車椅子対応")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterByWheelchairAccessible ? .white : .black)
+                            .background(filterByWheelchairAccessible ? Color.blue : Color.white)
+                            .cornerRadius(13)
+                    }
+                    
+                    Button(action: {
+                        filterByInfantFacilities.toggle()
+                    }) {
+                        Text("乳幼児用設備")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterByInfantFacilities ? .white : .black)
+                            .background(filterByInfantFacilities ? Color.blue : Color.white)
+                            .cornerRadius(13)
+                    }
+                    Button(action: {
+                        filterByunisexJapaneseStyle.toggle()
+                    }) {
+                        Text("和式")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterByunisexJapaneseStyle ? .white : .black)
+                            .background(filterByunisexJapaneseStyle ? Color.blue : Color.white)
+                            .cornerRadius(10)
+                    }
+
+                    Button(action: {
+                        filterByOstomateFacilities.toggle()
+                    }) {
+                        Text("オストメイト設備")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterByOstomateFacilities ? .white : .black)
+                            .background(filterByOstomateFacilities ? Color.blue : Color.white)
+                            .cornerRadius(13)
+                    }
+                    Button(action: {
+                        filterByunisexWesternStyle.toggle()
+                    }) {
+                        Text("洋式")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterByunisexWesternStyle ? .white : .black)
+                            .background(filterByunisexWesternStyle ? Color.blue : Color.white)
+                            .cornerRadius(10)
+                    }
+                    Button(action: {
+                        filterBymultifunctionalToilets.toggle()
+                    }) {
+                        Text("多機能")
+                            .padding(.horizontal)
+                            .frame(height: 26)
+                            .foregroundColor(filterBymultifunctionalToilets ? .white : .black)
+                            .background(filterBymultifunctionalToilets ? Color.blue : Color.white)
+                            .cornerRadius(10)
+                    }
+                }
+            }
+            .padding(.horizontal)
             
             Spacer()
-            
-            List(dataModel.toilets,id:\.self){toilet in
+            Text("\(filteredToilets.count.description)個トイレが見つかりました。")
+                .font(.caption)
+                
+            List(filteredToilets, id: \.self) { toilet in
                 Text(toilet.address ?? "名前なし")
                     .onTapGesture {
                         isPresented = false
@@ -71,10 +120,15 @@ struct searchListView: View {
             }
         }
     }
-}
-
-extension Color {
-    static var backgroundColor:Color {
-        return Color(red:0.9,green:0.9,blue:0.9)
+    
+    private var filteredToilets: [PublicToilet] {
+        dataModel.toilets.filter { toilet in
+            (!filterByWheelchairAccessible || toilet.wheelchairAccessible == "○") &&
+            (!filterByInfantFacilities || toilet.infantFacilities == "○") &&
+            (!filterByOstomateFacilities || toilet.ostomateFacilities == "○") &&
+            (!filterByunisexJapaneseStyle || toilet.unisexJapaneseStyle ?? 0 > 0) &&
+            (!filterByunisexWesternStyle || toilet.unisexWesternStyle ?? 0 > 0) &&
+            (!filterBymultifunctionalToilets || toilet.multifunctionalToilets ?? 0 > 0)
+        }
     }
 }

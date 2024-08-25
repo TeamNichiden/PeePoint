@@ -258,7 +258,7 @@ extension DetailView{
                     .font(.title)
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
-                    .background(.blue)
+                    .background(Color.customColor)
                     .cornerRadius(10)
                     .padding()
                     .shadow(radius: 10)
