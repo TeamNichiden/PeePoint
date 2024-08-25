@@ -7,7 +7,7 @@ class DetailViewModel: ObservableObject {
 }
 
 struct DetailView: View {
-    @State var index = 200
+    var selectedToilet : PublicToilet
     @StateObject private var viewModel = DetailViewModel()
     @EnvironmentObject private var dataModel: PublicToiletManager
     
@@ -34,10 +34,7 @@ struct DetailView: View {
     }
 }
 
-#Preview {
-    DetailView()
-        .environmentObject(PublicToiletManager())
-}
+
 //FUNCTIONS
 extension DetailView{
     private func getArrivalTime(timeTakenToArrive : Int) -> String {
@@ -58,7 +55,7 @@ extension DetailView{
 extension DetailView{
     private var TitelAndFavButtonView: some View{
         HStack {
-            Text(dataModel.toilets[index].name ?? "No name")
+            Text(selectedToilet.name ?? "No name")
                 .font(.title)
                 .frame(width: 350)
             Spacer()
@@ -71,7 +68,7 @@ extension DetailView{
     // MARK: - Title and Favorite Button View
     private var titleAndFavButtonView: some View {
         HStack {
-            Text(dataModel.toilets[index].address ?? "No name")
+            Text(selectedToilet.address ?? "No name")
                 .font(.title)
             
             Spacer()
@@ -88,7 +85,7 @@ extension DetailView{
         HStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    ForEach(dataModel.toilets[index].image, id: \.self) { imageUrl in
+                    ForEach(selectedToilet.image, id: \.self) { imageUrl in
                         imageNavigationLink(for: imageUrl)
                     }
                 }
@@ -132,7 +129,7 @@ extension DetailView{
             image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 200, height: 200)
+                .frame(width: 200, height: 150)
         } placeholder: {
             placeholderImageView
         }
@@ -184,45 +181,45 @@ extension DetailView{
     private func getLabels() -> [(String, String?)] {
         var labels = [(String, String?)]()
         
-        if let maleJapaneseStyle = dataModel.toilets[index].maleJapaneseStyle, maleJapaneseStyle > 0 {
-            labels.append(("男性トイレ数（和式）", "\(maleJapaneseStyle)"))
+        if let maleJapaneseStyle = selectedToilet.maleJapaneseStyle, maleJapaneseStyle > 0 {
+            labels.append(("男性（和式）", "\(maleJapaneseStyle)"))
         }
         
-        if let maleWesternStyle = dataModel.toilets[index].maleWesternStyle, maleWesternStyle > 0 {
-            labels.append(("男性トイレ数（洋式）", "\(maleWesternStyle)"))
+        if let maleWesternStyle = selectedToilet.maleWesternStyle, maleWesternStyle > 0 {
+            labels.append(("男性（洋式）", "\(maleWesternStyle)"))
         }
         
-        if let femaleJapaneseStyle = dataModel.toilets[index].femaleJapaneseStyle, femaleJapaneseStyle > 0 {
-            labels.append(("女性トイレ数（和式）", "\(femaleJapaneseStyle)"))
+        if let femaleJapaneseStyle = selectedToilet.femaleJapaneseStyle, femaleJapaneseStyle > 0 {
+            labels.append(("女性（和式）", "\(femaleJapaneseStyle)"))
         }
         
-        if let femaleWesternStyle = dataModel.toilets[index].femaleWesternStyle, femaleWesternStyle > 0 {
-            labels.append(("女性トイレ数（洋式）", "\(femaleWesternStyle)"))
+        if let femaleWesternStyle = selectedToilet.femaleWesternStyle, femaleWesternStyle > 0 {
+            labels.append(("女性（洋式）", "\(femaleWesternStyle)"))
         }
         
-        if let unisexJapaneseStyle = dataModel.toilets[index].unisexJapaneseStyle, unisexJapaneseStyle > 0 {
-            labels.append(("男女共用トイレ数（和式）", "\(unisexJapaneseStyle)"))
+        if let unisexJapaneseStyle = selectedToilet.unisexJapaneseStyle, unisexJapaneseStyle > 0 {
+            labels.append(("男女共用（和式）", "\(unisexJapaneseStyle)"))
         }
         
-        if let unisexWesternStyle = dataModel.toilets[index].unisexWesternStyle, unisexWesternStyle > 0 {
-            labels.append(("男女共用トイレ数（洋式）", "\(unisexWesternStyle)"))
+        if let unisexWesternStyle = selectedToilet.unisexWesternStyle, unisexWesternStyle > 0 {
+            labels.append(("男女共用（洋式）", "\(unisexWesternStyle)"))
         }
         
-        if let multifunctionalToilets = dataModel.toilets[index].multifunctionalToilets, multifunctionalToilets > 0 {
+        if let multifunctionalToilets = selectedToilet.multifunctionalToilets, multifunctionalToilets > 0 {
             labels.append(("多機能トイレ数", "\(multifunctionalToilets)"))
         }
         
-        if let wheelchairAccessible = dataModel.toilets[index].wheelchairAccessible, !wheelchairAccessible.isEmpty,
+        if let wheelchairAccessible = selectedToilet.wheelchairAccessible, !wheelchairAccessible.isEmpty,
            wheelchairAccessible == "○" {
             labels.append(("車椅子使用者", nil))
         }
         
-        if let infantFacilities = dataModel.toilets[index].infantFacilities, !infantFacilities.isEmpty,
+        if let infantFacilities = selectedToilet.infantFacilities, !infantFacilities.isEmpty,
            infantFacilities == "○" {
             labels.append(("乳幼児用設備設置", nil))
         }
         
-        if let ostomateFacilities = dataModel.toilets[index].ostomateFacilities, !ostomateFacilities.isEmpty,
+        if let ostomateFacilities = selectedToilet.ostomateFacilities, !ostomateFacilities.isEmpty,
            ostomateFacilities == "○" {
             labels.append(("オストメイト設置", nil))
         }
@@ -255,7 +252,7 @@ extension DetailView{
             Spacer()
             Button {
                 print("案内")
-                index += 1
+      
             } label: {
                 Text("Direction")
                     .foregroundColor(.white)
