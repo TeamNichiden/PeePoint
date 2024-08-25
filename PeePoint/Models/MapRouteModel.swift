@@ -8,8 +8,8 @@
 import Foundation
 import MapKit
 
-class LocationModel: ObservableObject {
-    public static let shared = LocationModel()
+class MapRouteModel: ObservableObject {
+    public static let shared = MapRouteModel()
 
     private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
