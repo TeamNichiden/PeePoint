@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 class DetailViewModel: ObservableObject {
     @Published var showFullSizeImage = false
@@ -9,6 +10,7 @@ class DetailViewModel: ObservableObject {
 struct DetailView: View {
     var selectedToilet : PublicToilet
     @StateObject private var viewModel = DetailViewModel()
+    @StateObject private var routeModel = MapRouteModel.shared
     @EnvironmentObject private var dataModel: PublicToiletManager
     
     var body: some View {
@@ -250,15 +252,14 @@ extension DetailView{
         VStack{
             Spacer()
             Button {
-                print("案内")
-      
+                routeModel.startFetchingRoute(to: CLLocationCoordinate2D(latitude: selectedToilet.latitude, longitude: selectedToilet.longitude))
             } label: {
                 Text("Direction")
                     .foregroundColor(.white)
                     .font(.title)
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
-                    .background(.blue)
+                    .background(Color.customColor)
                     .cornerRadius(10)
                     .padding()
                     .shadow(radius: 10)
