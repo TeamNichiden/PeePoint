@@ -27,11 +27,40 @@ struct MainMapView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @State var showSearchView: Bool = false
-    
+    @StateObject private var quadtree = PublicToiletManager()
+    @StateObject private var routeModel = MapRouteModel.shared
+    private var locationManager = CLLocationManager()
+    @State private var cameraPosition = MapCameraPosition.region(MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),
+        latitudinalMeters: 500,
+        longitudinalMeters: 500
+    ))
+    @State private var destinationCoordinate: CLLocationCoordinate2D? = nil
     var body: some View {
         ZStack {
-            Map()
-                .ignoresSafeArea()
+            Map(position: $cameraPosition) {
+                UserAnnotation()
+                ForEach(quadtree.toilets) { location in
+                    
+                    Annotation(location.name ?? "", coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)){
+                        VStack{
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+                }
+                if let destinationCoordinate = destinationCoordinate {
+                    Annotation("Destination", coordinate: destinationCoordinate) {
+                        Image("map_pin")
+                            .scaleEffect(0.3)
+                    }
+                }
+                if let route = routeModel.route {
+                    MapPolyline(route)
+                        .stroke(Color.blue, lineWidth: 5)
+                }
+            }
             VStack {
                 searchBar
                 
@@ -115,11 +144,14 @@ struct MainMapView: View {
     
         .sheet(isPresented: $viewModel.showNearbyToiletSheet) {
             defaultSheetView(
-                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet,
+
+                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, 
                 selectedToilet: $viewModel.selectedToilet,
-                showDetailView: $viewModel.showDetailView
+                showDetailView: $viewModel.showDetailView,
+                nearestToilets: quadtree.nearestToilets
             )
             .presentationDetents([.fraction(0.58)])
+            
         }
         .sheet(isPresented: $viewModel.showDetailView) {
             if let selectedToilet = viewModel.selectedToilet {
@@ -140,13 +172,41 @@ struct MainMapView: View {
                             filterBymultifunctionalToilets: $viewModel.filterBymultifunctionalToilets
                         )
         })
-}
+        .onAppear(){
+            if let currentLocation = locationManager.location {
+                quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+            }
+        }
+        .onChange(of: routeModel.destinationCoordinate) {
+            if let newDestination = routeModel.destinationCoordinate {
+                destinationCoordinate = newDestination
+                updateCameraPosition(to: newDestination)
+            }
+        }
+    }
+    private func updateCameraPosition(to coordinate: CLLocationCoordinate2D) {
+        withAnimation{
+            cameraPosition = .region(MKCoordinateRegion(
+                center: coordinate,
+                latitudinalMeters: 500,
+                longitudinalMeters: 500
+            ))
+        }
+    }
 }
 
 
-extension MainMapView {
-    private var ShowNearbyListButtonView: some View {
-        VStack {
+
+extension CLLocationCoordinate2D: Equatable {
+    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+        lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+    }
+}
+
+
+extension MainMapView{
+    private var ShowNearbyListButtonView:some View{
+        VStack{
             Spacer()
             Button {
                 viewModel.showNearbyToiletSheet = true

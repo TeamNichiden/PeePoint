@@ -12,7 +12,7 @@ struct PeePointApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView{
-                MainMapView()
+                SplashScreenView()
                     .environmentObject(PublicToiletManager())
             }
         }

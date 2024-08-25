@@ -8,26 +8,37 @@
 import Foundation
 import MapKit
 
-class LocationModel: ObservableObject {
-    public static let shared = LocationModel()
+class MapRouteModel: ObservableObject {
+    public static let shared = MapRouteModel()
 
     private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
     @Published var isFetchingRoute = false
+    @Published var currentLocation: CLLocation?
+    @Published var destinationCoordinate: CLLocationCoordinate2D?
+
     private var timer: Timer?
 
     @Published var isArrived = false
+    
+    init() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
 
     func startFetchingRoute(to destination: CLLocationCoordinate2D) {
+        print("Fetching route to \(destination)")
         stopFetchingRoute() // 既存のタイマーを停止
         fetchRoute(destination: destination) // 初回のルート取得
 
         isFetchingRoute = true
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.fetchRoute(destination: destination)
-            self?.checkArriaval(destination: destination)
-        }
+        destinationCoordinate = destination // 目的地の座標を保存
+
+//        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+//            self?.fetchRoute(destination: destination)
+//            self?.checkArriaval(destination: destination)
+//        }
     }
     
 
@@ -80,5 +91,9 @@ class LocationModel: ObservableObject {
                 self.route = response?.routes.first
             }
         }
+    }
+    
+    private func updatecurrentLocation() {
+        locationManager.requestLocation()
     }
 }
