@@ -21,6 +21,7 @@ struct MainMapView: View {
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
     let currentLocation = CLLocation(latitude: 139.6917, longitude: 35.6895) // 東京駅付近
+    private var locationManager = CLLocationManager()
     
     //Sample List
     let items = ["江東区","江東区","江東区"]
@@ -86,9 +87,11 @@ struct MainMapView: View {
         .fullScreenCover(isPresented: $showSearchView, content: {
             searchListView(isPresented: $showSearchView, showDetailView: $viewModel.showDetailView, selectedToilet:$viewModel.selectedToilet)
         })
-        .onAppear {
-            quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
-        }
+        .onAppear(){
+                    if let currentLocation = locationManager.location {
+                        quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+                    }
+                }
     }
 }
 

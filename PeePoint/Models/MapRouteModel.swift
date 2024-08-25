@@ -14,9 +14,15 @@ class LocationModel: ObservableObject {
     private var locationManager = CLLocationManager()
     @Published var route: MKRoute?
     @Published var isFetchingRoute = false
+    @Published var currentLocation: CLLocation?
     private var timer: Timer?
 
     @Published var isArrived = false
+    
+    init() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
 
     func startFetchingRoute(to destination: CLLocationCoordinate2D) {
         stopFetchingRoute() // 既存のタイマーを停止
@@ -80,5 +86,9 @@ class LocationModel: ObservableObject {
                 self.route = response?.routes.first
             }
         }
+    }
+    
+    private func updatecurrentLocation() {
+        locationManager.requestLocation()
     }
 }
