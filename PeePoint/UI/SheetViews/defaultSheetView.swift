@@ -10,8 +10,9 @@ import SwiftUI
 struct defaultSheetView: View {
     @Binding var showNearbyToiletSheet : Bool
     @Binding var selectedToilet: PublicToilet?
-    @EnvironmentObject var toiletData:PublicToiletManager
     @Binding var showDetailView:Bool
+    let nearestToilets:[PublicToilet]
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("お近くのトイレ")
@@ -19,7 +20,7 @@ struct defaultSheetView: View {
                 .padding(.vertical)
             
             
-            ForEach(toiletData.nearestToilets, id: \.self) { toilet in
+            ForEach(nearestToilets, id: \.self) { toilet in
                 HStack {
                     Group{
                         Image("toilet-thumbnil")
@@ -65,6 +66,7 @@ struct defaultSheetView: View {
                 
             }
         }
+
         .padding()
         
     }
