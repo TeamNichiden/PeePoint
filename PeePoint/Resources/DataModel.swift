@@ -8,7 +8,8 @@
 import Foundation
 
 
-struct PublicToilet: Codable,Hashable {
+struct PublicToilet: Codable,Hashable,Identifiable {
+    var id = UUID()
     let prefectureCode: Int?              // 都道府県コード又は市区町村コード
     let number: Int?                      // NO
     let prefectureName: String?           // 都道府県名

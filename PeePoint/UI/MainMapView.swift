@@ -20,9 +20,13 @@ struct MainMapView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
-    let currentLocation = CLLocation(latitude: 139.6917, longitude: 35.6895) // 東京駅付近
+    @StateObject private var routeModel = MapRouteModel()
     private var locationManager = CLLocationManager()
-    
+    @State private var cameraPosition = MapCameraPosition.region(MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),
+                latitudinalMeters: 500,
+                longitudinalMeters: 500
+            ))
     //Sample List
     let items = ["江東区","江東区","江東区"]
     //Sampleフィルター
@@ -40,8 +44,23 @@ struct MainMapView: View {
     
     var body: some View {
         ZStack {
-            Map()
-                .ignoresSafeArea()
+            Map(position: $cameraPosition) {
+                UserAnnotation()
+                ForEach(quadtree.toilets) { location in
+                    
+                    Annotation(location.name ?? "", coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)){
+                        VStack{
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+                }
+                if let route = routeModel.route {
+                    MapPolyline(route)
+                        .stroke(Color.blue, lineWidth: 5)
+                }
+            }
             VStack{
                 Button {
                     showSearchView = true
