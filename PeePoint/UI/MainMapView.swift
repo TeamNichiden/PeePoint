@@ -23,10 +23,12 @@ struct MainMapView: View {
     @StateObject private var routeModel = MapRouteModel.shared
     private var locationManager = CLLocationManager()
     @State private var cameraPosition = MapCameraPosition.region(MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),
-                latitudinalMeters: 500,
-                longitudinalMeters: 500
-            ))
+        center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),
+        latitudinalMeters: 500,
+        longitudinalMeters: 500
+    ))
+    @State private var destinationCoordinate: CLLocationCoordinate2D? = nil
+    
     //Sample List
     let items = ["江東区","江東区","江東区"]
     //Sampleフィルター
@@ -56,11 +58,18 @@ struct MainMapView: View {
                         }
                     }
                 }
+                if let destinationCoordinate = destinationCoordinate {
+                    Annotation("Destination", coordinate: destinationCoordinate) {
+                        Image("map_pin")
+                            .scaleEffect(0.3)
+                    }
+                }
                 if let route = routeModel.route {
                     MapPolyline(route)
                         .stroke(Color.blue, lineWidth: 5)
                 }
             }
+            
             VStack{
                 Button {
                     showSearchView = true
@@ -77,9 +86,9 @@ struct MainMapView: View {
                         .padding()
                         .shadow(radius:10, y:5)
                 }
-
-
-
+                
+                
+                
                 
                 Spacer()
                 ShowNearbyListButtonView
@@ -96,7 +105,7 @@ struct MainMapView: View {
                 nearestToilets: quadtree.nearestToilets
             )
             .presentationDetents([.fraction(0.58)])
-
+            
         }
         
         .sheet(isPresented: $viewModel.showDetailView) {
@@ -109,10 +118,33 @@ struct MainMapView: View {
             searchListView(isPresented: $showSearchView, showDetailView: $viewModel.showDetailView, selectedToilet:$viewModel.selectedToilet)
         })
         .onAppear(){
-                    if let currentLocation = locationManager.location {
-                        quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
-                    }
-                }
+            if let currentLocation = locationManager.location {
+                quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
+            }
+        }
+        .onChange(of: routeModel.destinationCoordinate) {
+            if let newDestination = routeModel.destinationCoordinate {
+                destinationCoordinate = newDestination
+                updateCameraPosition(to: newDestination)
+            }
+        }
+    }
+    private func updateCameraPosition(to coordinate: CLLocationCoordinate2D) {
+        withAnimation{
+            cameraPosition = .region(MKCoordinateRegion(
+                center: coordinate,
+                latitudinalMeters: 500,
+                longitudinalMeters: 500
+            ))
+        }
+    }
+}
+
+
+
+extension CLLocationCoordinate2D: Equatable {
+    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+        lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
     }
 }
 
