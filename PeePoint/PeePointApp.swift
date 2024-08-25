@@ -11,8 +11,10 @@ import SwiftUI
 struct PeePointApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashScreenView()
-                .environmentObject(PublicToiletManager())
+            NavigationStack{
+                MainMapView()
+                    .environmentObject(PublicToiletManager())
+            }
         }
     }
 }

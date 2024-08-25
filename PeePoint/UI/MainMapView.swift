@@ -8,31 +8,10 @@ import SwiftUI
 import MapKit
 
 class MapViewModel: ObservableObject {
-    @Published var showSheet: Bool = true
+    @Published var showDetailView:Bool = false
+    @Published var showNearbyToiletSheet: Bool = true
     @Published var searchText: String = ""
-    @Published var viewNumber: Int = 0 {
-        didSet {
-            sheetSize = calculateSheetSize()
-        }
-    }
-    
-    @Published var sheetSize: Double = 0.75
-    
-    init() {
-        sheetSize = calculateSheetSize()
-    }
-    
-    
-    private func calculateSheetSize() -> Double {
-        switch viewNumber {
-        case 0:
-            return 0.35
-        case 1:
-            return 0.75
-        default:
-            return 0.35
-        }
-    }
+    @Published var selectedToilet:PublicToilet? = nil
 }
 
 
@@ -63,23 +42,15 @@ struct MainMapView: View {
             Map()
                 .ignoresSafeArea()
             VStack{
-                Button(action: {
-                    //遷移bool
-                    isTap = true
-                }) {
-                    TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
-                        isTap = item
-                    })
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .frame(height:55)
-                    .background(.white)
-                    .cornerRadius(30)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(.gray,lineWidth:1))
-                    .padding()
-                }
+                TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
+                    isTap = item
+                })
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(20)
+                .padding()
                 //検索欄
                 if isTap {
                     LazyVStack(alignment: .leading,spacing: 0) {
@@ -97,35 +68,62 @@ struct MainMapView: View {
                                 )
                         }
                     }
+                    
                 }
                 
                 Spacer()
+                ShowNearbyListButtonView
                 
             }
-            .sheet(isPresented: $viewModel.showSheet) {
-                switch viewModel.viewNumber{
-                case 0:
-                    defaultSheetView()
-                        .presentationDetents([.fraction(0.35), .medium])
-                        .interactiveDismissDisabled()
-                case 1:
-                    DetailView()
-                        .presentationDetents([.fraction(0.75), .fraction(0.75)])
-                        .interactiveDismissDisabled()
-                default:
-                    ContentView()
-                }
-                
+            
+            
+            
+        }
+        .sheet(isPresented: $viewModel.showNearbyToiletSheet) {
+            defaultSheetView(
+                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, selectedToilet: $viewModel.selectedToilet,
+                showDetailView: $viewModel.showDetailView)
+            .presentationDetents([.fraction(0.65)])
+        }
+        
+        .sheet(isPresented: $viewModel.showDetailView) {
+            if let selectedToilet = viewModel.selectedToilet {
+                DetailView(selectedToilet: selectedToilet) // Use the correct label
+                    .presentationDetents([.fraction(0.75)])
             }
-            if isTap {
-                searchListView()
-            }
-        }.onAppear {
+        }
+        .onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
         }
     }
 }
 
+
+extension MainMapView{
+    private var ShowNearbyListButtonView:some View{
+        VStack{
+            Spacer()
+            Button {
+                viewModel.showNearbyToiletSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "line.3.horizontal")
+                        .font(.title)
+                        .padding(.leading)
+                    Text("お近くのトイレ")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 65)
+            }
+            .background(Color.white)
+            .foregroundColor(.black)
+            
+            
+        }
+    }
+}
 #Preview {
     MainMapView()
         .environmentObject(PublicToiletManager())
