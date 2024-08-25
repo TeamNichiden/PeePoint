@@ -15,6 +15,8 @@ class MapRouteModel: ObservableObject {
     @Published var route: MKRoute?
     @Published var isFetchingRoute = false
     @Published var currentLocation: CLLocation?
+    @Published var destinationCoordinate: CLLocationCoordinate2D?
+
     private var timer: Timer?
 
     @Published var isArrived = false
@@ -31,6 +33,8 @@ class MapRouteModel: ObservableObject {
 
         isFetchingRoute = true
         
+        destinationCoordinate = destination // 目的地の座標を保存
+
 //        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
 //            self?.fetchRoute(destination: destination)
 //            self?.checkArriaval(destination: destination)
