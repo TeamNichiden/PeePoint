@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct defaultSheetView: View {
     @Binding var showNearbyToiletSheet : Bool
     @Binding var selectedToilet: PublicToilet?
     @Binding var showDetailView:Bool
     let nearestToilets:[PublicToilet]
+    @StateObject private var routeModel = MapRouteModel.shared
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -47,7 +49,7 @@ struct defaultSheetView: View {
                     
                     //案内スタート
                     Button(action: {
-                        //
+                        routeModel.startFetchingRoute(to: CLLocationCoordinate2D(latitude: toilet.latitude, longitude: toilet.longitude))
                     }) {
                         Text("Direction")
                             .foregroundColor(.white)
@@ -66,7 +68,6 @@ struct defaultSheetView: View {
                 
             }
         }
-
         .padding()
         
     }

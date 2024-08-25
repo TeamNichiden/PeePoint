@@ -20,7 +20,7 @@ struct MainMapView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
     @StateObject private var quadtree = PublicToiletManager()
-    @StateObject private var routeModel = MapRouteModel()
+    @StateObject private var routeModel = MapRouteModel.shared
     private var locationManager = CLLocationManager()
     @State private var cameraPosition = MapCameraPosition.region(MKCoordinateRegion(
                 center: CLLocationCoordinate2D(latitude: 35.6895, longitude: 139.6917),

@@ -25,15 +25,16 @@ class MapRouteModel: ObservableObject {
     }
 
     func startFetchingRoute(to destination: CLLocationCoordinate2D) {
+        print("Fetching route to \(destination)")
         stopFetchingRoute() // 既存のタイマーを停止
         fetchRoute(destination: destination) // 初回のルート取得
 
         isFetchingRoute = true
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.fetchRoute(destination: destination)
-            self?.checkArriaval(destination: destination)
-        }
+//        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+//            self?.fetchRoute(destination: destination)
+//            self?.checkArriaval(destination: destination)
+//        }
     }
     
 
