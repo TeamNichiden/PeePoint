@@ -7,18 +7,26 @@
 import SwiftUI
 import MapKit
 
+
+
 class MapViewModel: ObservableObject {
-    @Published var showDetailView:Bool = false
+    @Published var showDetailView: Bool = false
     @Published var showNearbyToiletSheet: Bool = true
     @Published var searchText: String = ""
-    @Published var selectedToilet:PublicToilet? = nil
-}
-
-
-struct MainMapView: View {
+    @Published var selectedToilet: PublicToilet? = nil
     
+    // Filter
+    @Published var filterByWheelchairAccessible: Bool = false
+    @Published var filterByInfantFacilities: Bool = false
+    @Published var filterByOstomateFacilities: Bool = false
+    @Published var filterByunisexJapaneseStyle:Bool = false
+    @Published var filterByunisexWesternStyle:Bool = false
+    @Published var filterBymultifunctionalToilets:Bool = false
+}
+struct MainMapView: View {
     @EnvironmentObject private var dataModel: PublicToiletManager
     @StateObject private var viewModel = MapViewModel()
+    @State var showSearchView: Bool = false
     @StateObject private var quadtree = PublicToiletManager()
     @StateObject private var routeModel = MapRouteModel.shared
     private var locationManager = CLLocationManager()
@@ -28,22 +36,6 @@ struct MainMapView: View {
         longitudinalMeters: 500
     ))
     @State private var destinationCoordinate: CLLocationCoordinate2D? = nil
-    
-    //Sample List
-    let items = ["江東区","江東区","江東区"]
-    //Sampleフィルター
-    private var listFiltered: [String] {
-        if viewModel.searchText.isEmpty {
-            return items
-        } else {
-            return items.filter {
-                $0.localizedStandardContains(viewModel.searchText)
-            }
-        }
-    }
-    
-    @State var showSearchView:Bool = false
-    
     var body: some View {
         ZStack {
             Map(position: $cameraPosition) {
@@ -69,53 +61,116 @@ struct MainMapView: View {
                         .stroke(Color.blue, lineWidth: 5)
                 }
             }
-            
-            VStack{
-                Button {
-                    showSearchView = true
-                } label: {
-                    Text("検索")
-                        .padding(.leading)
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity,alignment: .leading)
-                        .frame(height:55)
-                        .background(.white)
-                        .cornerRadius(10)
-                        .padding()
-                        .shadow(radius:10, y:5)
+            VStack {
+                searchBar
+                
+                // Filter Buttons
+                ScrollView(.horizontal,showsIndicators: false){
+                    HStack {
+                        Button(action: {
+                            viewModel.filterByWheelchairAccessible.toggle()
+                        }) {
+                            Text("車椅子対応")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterByWheelchairAccessible ? .white : .black)
+                                .background(viewModel.filterByWheelchairAccessible ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: {
+                            viewModel.filterByInfantFacilities.toggle()
+                        }) {
+                            Text("乳幼児用設備")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterByInfantFacilities ? .white : .black)
+                                .background(viewModel.filterByInfantFacilities ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: {
+                            viewModel.filterByunisexJapaneseStyle.toggle()
+                        }) {
+                            Text("和式")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterByunisexJapaneseStyle ? .white : .black)
+                                .background(viewModel.filterByunisexJapaneseStyle ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: {
+                            viewModel.filterByOstomateFacilities.toggle()
+                        }) {
+                            Text("オストメイト対応")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterByOstomateFacilities ? .white : .black)
+                                .background(viewModel.filterByOstomateFacilities ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: {
+                            viewModel.filterByunisexWesternStyle.toggle()
+                        }) {
+                            Text("洋式")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterByunisexWesternStyle ? .white : .black)
+                                .background(viewModel.filterByunisexWesternStyle ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        Button(action: {
+                            viewModel.filterBymultifunctionalToilets.toggle()
+                        }) {
+                            Text("多機能")
+                                .padding(.horizontal)
+                                .frame(height: 26)
+                                .foregroundColor(viewModel.filterBymultifunctionalToilets ? .white : .black)
+                                .background(viewModel.filterBymultifunctionalToilets ? Color.blue : Color.white)
+                                .cornerRadius(10)
+                        }
+                        
+                    }
                 }
-                
-                
-                
+                .padding(.horizontal)
                 
                 Spacer()
                 ShowNearbyListButtonView
-                
             }
-            
-            
-            
-        }
+    }
+        .navigationBarHidden(true)
+    
         .sheet(isPresented: $viewModel.showNearbyToiletSheet) {
             defaultSheetView(
-                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, selectedToilet: $viewModel.selectedToilet,
+
+                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, 
+                selectedToilet: $viewModel.selectedToilet,
                 showDetailView: $viewModel.showDetailView,
                 nearestToilets: quadtree.nearestToilets
             )
             .presentationDetents([.fraction(0.58)])
             
         }
-        
         .sheet(isPresented: $viewModel.showDetailView) {
             if let selectedToilet = viewModel.selectedToilet {
-                DetailView(selectedToilet: selectedToilet) // Use the correct label
+                DetailView(selectedToilet: selectedToilet)
                     .presentationDetents([.fraction(0.75)])
             }
         }
         .fullScreenCover(isPresented: $showSearchView, content: {
-            searchListView(isPresented: $showSearchView, showDetailView: $viewModel.showDetailView, selectedToilet:$viewModel.selectedToilet)
+            searchListView(
+                            isPresented: $showSearchView,
+                            showDetailView: $viewModel.showDetailView,
+                            selectedToilet: $viewModel.selectedToilet,
+                            filterByWheelchairAccessible: $viewModel.filterByWheelchairAccessible,
+                            filterByInfantFacilities: $viewModel.filterByInfantFacilities,
+                            filterByOstomateFacilities: $viewModel.filterByOstomateFacilities,
+                            filterByunisexJapaneseStyle: $viewModel.filterByunisexJapaneseStyle,
+                            filterByunisexWesternStyle: $viewModel.filterByunisexWesternStyle,
+                            filterBymultifunctionalToilets: $viewModel.filterBymultifunctionalToilets
+                        )
         })
         .onAppear(){
             if let currentLocation = locationManager.location {
@@ -169,9 +224,36 @@ extension MainMapView{
             }
             .background(Color.white)
             .foregroundColor(.black)
-            
-            
         }
+    }
+    
+    private var filteredToilets: [PublicToilet] {
+        dataModel.toilets.filter { toilet in
+            (!viewModel.filterByWheelchairAccessible || toilet.wheelchairAccessible == "○") &&
+            (!viewModel.filterByInfantFacilities || toilet.infantFacilities == "○") &&
+            (!viewModel.filterByOstomateFacilities || toilet.ostomateFacilities == "○") &&
+            (!viewModel.filterByunisexJapaneseStyle || toilet.unisexJapaneseStyle ?? 0 > 0) &&
+            (!viewModel.filterByunisexWesternStyle || toilet.unisexWesternStyle ?? 0 > 0) &&
+            (!viewModel.filterBymultifunctionalToilets || toilet.multifunctionalToilets ?? 0 > 0)
+        }
+    }
+    private var searchBar: some View{
+        Button {
+            showSearchView = true
+        } label: {
+            Text("検索")
+                .padding(.leading)
+                .font(.headline)
+                .foregroundColor(.gray)
+                .font(.headline)
+                .frame(maxWidth: .infinity,alignment: .leading)
+                .frame(height:55)
+                .background(.white)
+                .cornerRadius(10)
+                .padding()
+                .shadow(radius:10, y:5)
+        }
+        
     }
 }
 #Preview {
