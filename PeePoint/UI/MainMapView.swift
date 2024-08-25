@@ -35,41 +35,31 @@ struct MainMapView: View {
         }
     }
     
-    @State private var isTap:Bool = false
+    @State var showSearchView:Bool = false
     
     var body: some View {
         ZStack {
             Map()
                 .ignoresSafeArea()
             VStack{
-                TextField("検索", text: $viewModel.searchText, onEditingChanged: { item in
-                    isTap = item
-                })
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity)
-                .frame(height:55)
-                .background(.white)
-                .cornerRadius(20)
-                .padding()
-                //検索欄
-                if isTap {
-                    LazyVStack(alignment: .leading,spacing: 0) {
-                        ForEach(listFiltered.indices, id: \.self) { index in
-                            Text(listFiltered[index])
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(.white)
-                                .overlay(
-                                    Rectangle()
-                                        .frame(height:1)
-                                        .foregroundColor(.gray)
-                                        .padding(.top,34)
-                                        .padding(.horizontal)
-                                )
-                        }
-                    }
-                    
+                Button {
+                    showSearchView = true
+                } label: {
+                    Text("検索")
+                        .padding(.leading)
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity,alignment: .leading)
+                        .frame(height:55)
+                        .background(.white)
+                        .cornerRadius(10)
+                        .padding()
+                        .shadow(radius:10, y:5)
                 }
+
+
+
                 
                 Spacer()
                 ShowNearbyListButtonView
@@ -83,7 +73,8 @@ struct MainMapView: View {
             defaultSheetView(
                 showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, selectedToilet: $viewModel.selectedToilet,
                 showDetailView: $viewModel.showDetailView)
-            .presentationDetents([.fraction(0.65)])
+            .presentationDetents([.fraction(0.58)])
+
         }
         
         .sheet(isPresented: $viewModel.showDetailView) {
@@ -92,6 +83,9 @@ struct MainMapView: View {
                     .presentationDetents([.fraction(0.75)])
             }
         }
+        .fullScreenCover(isPresented: $showSearchView, content: {
+            searchListView(isPresented: $showSearchView, showDetailView: $viewModel.showDetailView, selectedToilet:$viewModel.selectedToilet)
+        })
         .onAppear {
             quadtree.findNearestToilets(currentLocation: currentLocation, maxResults: 4)
         }
