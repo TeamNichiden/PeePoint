@@ -38,21 +38,27 @@ struct MainMapView: View {
     @State private var destinationCoordinate: CLLocationCoordinate2D? = nil
     var body: some View {
         ZStack {
-            Map(position: $cameraPosition) {
+            Map(position: $cameraPosition,selection: $viewModel.selectedToilet) {
                 UserAnnotation()
-                ForEach(quadtree.toilets) { location in
+                ForEach(filteredToilets) { location in
                     
-                    Annotation(location.name ?? "", coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)){
-                        VStack{
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 5, height: 5)
+                    let locationCoordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+                    
+                    // 目的地と一致しないトイレにのみ通常のピンを表示
+                    if destinationCoordinate == nil || destinationCoordinate != locationCoordinate {
+                        Annotation(location.name ?? "", coordinate: locationCoordinate) {
+                            Image("map_pin")
+                                .scaleEffect(0.3)
+//                                .onTapGesture {
+//                                    viewModel.selectedToilet = location
+//                                    viewModel.showDetailView = true
+//                                }
                         }
                     }
                 }
                 if let destinationCoordinate = destinationCoordinate {
                     Annotation("Destination", coordinate: destinationCoordinate) {
-                        Image("map_pin")
+                        Image("map_goalpin")
                             .scaleEffect(0.3)
                     }
                 }
@@ -145,7 +151,7 @@ struct MainMapView: View {
         .sheet(isPresented: $viewModel.showNearbyToiletSheet) {
             defaultSheetView(
 
-                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, 
+                showNearbyToiletSheet: $viewModel.showNearbyToiletSheet,
                 selectedToilet: $viewModel.selectedToilet,
                 showDetailView: $viewModel.showDetailView,
                 nearestToilets: quadtree.nearestToilets
