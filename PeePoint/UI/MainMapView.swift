@@ -92,7 +92,9 @@ struct MainMapView: View {
         .sheet(isPresented: $viewModel.showNearbyToiletSheet) {
             defaultSheetView(
                 showNearbyToiletSheet: $viewModel.showNearbyToiletSheet, selectedToilet: $viewModel.selectedToilet,
-                showDetailView: $viewModel.showDetailView)
+                showDetailView: $viewModel.showDetailView,
+                nearestToilets: quadtree.nearestToilets
+            )
             .presentationDetents([.fraction(0.58)])
 
         }
