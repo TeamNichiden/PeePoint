@@ -27,7 +27,7 @@ struct searchListView: View {
         }
     }
     
-    @State private var isTap:Bool = false
+    @State private var isTap:Bool = true
     
     var body: some View {
         NavigationStack {
