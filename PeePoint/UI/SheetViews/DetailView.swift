@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreLocation
+import SDWebImageSwiftUI
 
 class DetailViewModel: ObservableObject {
     @Published var showFullSizeImage = false
@@ -126,7 +127,7 @@ extension DetailView{
     
     // MARK: - Thumbnail Image View
     private func thumbnailImageView(url: URL) -> some View {
-        AsyncImage(url: url) { image in
+        WebImage(url: url) { image in
             image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
